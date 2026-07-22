@@ -19,6 +19,15 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "akashcse018@gmail.com"
 
     @property
+    def database_url_corrected(self) -> str:
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+psycopg2://", 1)
+        elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
+            return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+        return url
+
+    @property
     def cors_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
 
@@ -26,4 +35,5 @@ class Settings(BaseSettings):
         env_file = ".env"
         extra = "ignore"
 settings = Settings()
+
 
