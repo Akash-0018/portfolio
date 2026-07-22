@@ -315,6 +315,29 @@ textarea.input-minimal {
   background: var(--lime);
 }
 
+/* ─── Contact and Admin Header Grid Layouts ─────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 2.5rem;
+}
+
+.contact-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .scroll-section {
@@ -323,6 +346,83 @@ textarea.input-minimal {
 
   .card-minimal {
     padding: 1.5rem;
+  }
+
+  /* Contact Responsive Overrides */
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .contact-inputs-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Admin Header Responsive Overrides */
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  
+  .admin-header h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  .admin-header > div:nth-child(2) {
+    width: 100%;
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .admin-header .btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* OS Footer Responsive overrides */
+  .os-footer {
+    padding: 4rem 1.25rem 2.5rem 1.25rem;
+  }
+  
+  .os-footer-container {
+    gap: 2.5rem;
+  }
+  
+  .os-footer-main {
+    gap: 2.5rem;
+  }
+  
+  .os-footer-zone1 {
+    flex: 1 1 100%;
+  }
+  
+  .os-footer-philosophy {
+    font-size: 2.2rem;
+    line-height: 1.3;
+  }
+  
+  .os-footer-zone2 {
+    flex: 1 1 100%;
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+
+  .os-footer-panel-val {
+    max-width: 180px;
+  }
+
+  .os-footer-signature {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .os-footer-sig-right {
+    align-items: flex-start;
+    text-align: left;
   }
 }
 
@@ -502,6 +602,89 @@ textarea.input-minimal {
 
 .cursor-blink {
   animation: cursor-blink 1s step-end infinite;
+}
+
+/* ─── Hero Section ────────────────────────────────────────────────────────── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 360px);
+  gap: 3rem;
+  width: 100%;
+}
+
+.hero-name {
+  font-family: var(--font-canela);
+  font-size: clamp(2.8rem, 6vw, 5.25rem);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.hero-heading {
+  font-family: var(--font-canela);
+  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.hero-description {
+  font-family: var(--font-akkurat);
+  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: left;
+    padding-top: 5.5rem;
+  }
+  
+  .hero-grid > div:nth-child(2) {
+    order: -1; /* Show portrait first on mobile/tablet */
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+/* ─── Mobile Navigation Overrides ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  header[aria-label="Section navigation"] {
+    width: 92% !important;
+    gap: 0.75rem !important;
+    padding: 0.5rem 1rem !important;
+    top: 1rem !important;
+    justify-content: flex-start !important;
+  }
+  
+  header[aria-label="Section navigation"] .identity-champagne {
+    display: none !important; /* Hide name badge on mobile nav to save horizontal space */
+  }
+
+  header[aria-label="Section navigation"] div[style*="width: 1px"] {
+    display: none !important; /* Hide separator line */
+  }
+  
+  header[aria-label="Section navigation"] nav {
+    gap: 1rem !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+  }
+  
+  header[aria-label="Section navigation"] nav::-webkit-scrollbar {
+    display: none !important;
+  }
+  
+  header[aria-label="Section navigation"] nav button {
+    gap: 0.25rem !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important; /* Prevent tabs from shrinking */
+  }
 }
 
 @keyframes cursor-blink {

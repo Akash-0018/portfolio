@@ -253,18 +253,7 @@ export default function AdminDashboard({ onLogout }) {
         background: '#121212',
       }}
     >
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justify: 'space-between',
-          alignItems: 'center',
-          gap: '1.5rem',
-          marginBottom: '2.5rem',
-          paddingBottom: '1.5rem',
-          borderBottom: '1px solid var(--border)',
-        }}
-      >
+      <div className="admin-header">
         <div>
           <div className="identity-champagne" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', marginBottom: '0.4rem' }}>
             ◈ ADMIN SYSTEM OS

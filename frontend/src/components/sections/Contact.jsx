@@ -49,7 +49,7 @@ export default function Contact() {
             Initiate <span className="identity-champagne">System Contact</span>.
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '2.5rem' }}>
+          <div className="contact-grid">
             {/* Direct Links */}
             <div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
@@ -96,7 +96,7 @@ export default function Contact() {
 
             {/* Input Form */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="contact-inputs-row">
                 <input
                   className="input-minimal"
                   name="name"

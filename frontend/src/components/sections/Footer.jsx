@@ -254,7 +254,7 @@ export default function Footer() {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 1, delay: 1 }}
           >
-            <div>© 2026</div>
+            <div>© 2026<a href="/admin" className="secret-link" style={{ color: 'inherit', textDecoration: 'none', cursor: 'none' }}>.</a></div>
             <div>End of Transmission.</div>
             <div>Session Closed.</div>
             <div className="terminal-exit" style={{ marginTop: '0.5rem' }}>
