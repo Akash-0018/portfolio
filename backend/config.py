@@ -4,7 +4,7 @@ from typing import List
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg2://portfolio_user:portfolio_pass@localhost:5435/portfolio_db"
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,https://akash-aiportfolio.netlify.app"
     ADMIN_USERNAMES: List[str] = ["akashcse018@gmail.com", "akash", "Akash", "AKASH", "admin"]
     ADMIN_PASSWORD: str = "Pydev@2602!"
     SECRET_KEY: str = "super-secret-portfolio-admin-jwt-key-2026"

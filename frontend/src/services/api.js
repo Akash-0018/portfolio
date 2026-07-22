@@ -1,8 +1,9 @@
 import axios from 'axios'
 
-// Direct hardcoded URL to completely bypass DevServer routing issues during debug
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: `${API_BASE}/api`,
   timeout: 10000,
 })
 
@@ -52,7 +53,7 @@ export const getImageUrl = (url) => {
   if (!url) return ''
   if (url.startsWith('http://') || url.startsWith('https://')) return url
   if (url.startsWith('/api/uploads/')) {
-    return `http://127.0.0.1:8000${url}`
+    return `${API_BASE}${url}`
   }
   return url
 }
