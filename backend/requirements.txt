@@ -1,0 +1,10 @@
+fastapi>=0.124.1
+uvicorn[standard]>=0.34
+sqlalchemy==2.0.31
+pydantic>=2.12
+pydantic-settings>=2.5.2
+python-dotenv==1.0.1
+python-multipart==0.0.9
+httpx>=0.28.1
+pyjwt>=2.8.0
+passlib[bcrypt]>=1.7.4
