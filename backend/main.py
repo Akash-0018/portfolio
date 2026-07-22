@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 import os
 from database import create_tables
@@ -54,6 +55,27 @@ app.add_middleware(
 )
 
 # Serve uploaded static files
+from database import SessionLocal
+from models.upload import Upload
+
+@app.get("/api/uploads/{filename}")
+def serve_upload(filename: str):
+    db = SessionLocal()
+    try:
+        # Check database first
+        db_file = db.query(Upload).filter(Upload.filename == filename).first()
+        if db_file:
+            return Response(content=db_file.data, media_type=db_file.mime_type)
+        
+        # Fallback to local files (e.g. default tracked image)
+        local_path = os.path.join("uploads", filename)
+        if os.path.exists(local_path):
+            return FileResponse(local_path)
+            
+        raise HTTPException(status_code=404, detail="File not found")
+    finally:
+        db.close()
+
 os.makedirs("uploads", exist_ok=True)
 app.mount("/api/uploads", StaticFiles(directory="uploads"), name="uploads")
 

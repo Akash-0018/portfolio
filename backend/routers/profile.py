@@ -17,7 +17,7 @@ def get_profile(db: Session = Depends(get_db)):
     setting = db.query(ProfileSetting).first()
     if not setting:
         # Create default record
-        setting = ProfileSetting(photo_url="/profile.png")
+        setting = ProfileSetting(photo_url="/api/uploads/61a1449aa7134424907e483975873ec1.png")
         db.add(setting)
         db.commit()
         db.refresh(setting)

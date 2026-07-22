@@ -16,6 +16,7 @@ __pycache__/
 /backend/__pycache__/
 /backend/uploads/*
 !/backend/uploads/.gitkeep
+!/backend/uploads/61a1449aa7134424907e483975873ec1.png
 
 # Environment variables
 .env
