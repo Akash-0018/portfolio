@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from config import settings
-from auth import create_access_token, get_current_admin
+from core.database import get_db
+from models.user import User
+from utils.auth import create_access_token, verify_password, get_current_admin
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -18,25 +20,32 @@ class TokenResponse(BaseModel):
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(request: LoginRequest):
-    print(f"--> LOGIN ATTEMPT: username='{request.username}', password='{request.password}'")
-    print(f"--> ALLOWED USERS: {settings.ADMIN_USERNAMES}")
-    print(f"--> TARGET PASSWORD: '{settings.ADMIN_PASSWORD}'")
-    
-    valid_username = any(
-        request.username.strip().lower() == allowed.strip().lower() for allowed in settings.ADMIN_USERNAMES
+@router.post("/login/", response_model=TokenResponse)
+def login(request: LoginRequest, db: Session = Depends(get_db)):
+    identity = request.username.strip()
+
+    # Dynamic DB user lookup by username OR email (case-insensitive)
+    user = (
+        db.query(User)
+        .filter((User.username.ilike(identity)) | (User.email.ilike(identity)))
+        .first()
     )
-    if not valid_username or request.password.strip() != settings.ADMIN_PASSWORD.strip():
-        print("--> LOGIN FAILED: Username or password mismatch!")
+
+    if not user or not verify_password(request.password.strip(), user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username/email or password",
         )
-    print("--> LOGIN SUCCESSFUL! Generating JWT token.")
-    access_token = create_access_token(data={"sub": request.username.strip()})
-    return {"access_token": access_token, "token_type": "bearer", "username": request.username.strip()}
+
+    access_token = create_access_token(data={"sub": user.username})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": user.username,
+    }
 
 
 @router.get("/verify")
+@router.get("/verify/")
 def verify_admin_status(current_admin: str = Depends(get_current_admin)):
     return {"status": "authenticated", "user": current_admin}

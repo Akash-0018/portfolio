@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from database import get_db
+from core.database import get_db
 from models.profile import ProfileSetting
-from auth import get_current_admin
+from utils.auth import get_current_admin
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -12,18 +12,21 @@ class ProfilePhotoUpdate(BaseModel):
     photo_url: str
 
 
+@router.get("")
 @router.get("/")
 def get_profile(db: Session = Depends(get_db)):
     setting = db.query(ProfileSetting).first()
+    default_photo = "/api/uploads/61a1449aa7134424907e483975873ec1.png"
     if not setting:
-        # Create default record
-        setting = ProfileSetting(photo_url="/api/uploads/61a1449aa7134424907e483975873ec1.png")
+        # Create default record pointing to default photo in uploads
+        setting = ProfileSetting(photo_url=default_photo)
         db.add(setting)
         db.commit()
         db.refresh(setting)
     return {"photo_url": setting.photo_url}
 
 
+@router.put("", response_model=dict)
 @router.put("/", response_model=dict)
 def update_profile_photo(
     data: ProfilePhotoUpdate,

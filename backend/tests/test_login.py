@@ -1,8 +1,12 @@
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import requests
-import json
 
 url = "http://127.0.0.1:8000/api/auth/login"
-payload = {"username": "Akash", "password": "Pydev@2602!"}
+payload = {"username": "akashcse018@gmail.com", "password": "Pydev@2602!"}
 headers = {"Content-Type": "application/json"}
 
 try:

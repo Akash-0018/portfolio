@@ -34,13 +34,14 @@ export default function AdminDashboard({ onLogout }) {
     order_index: 0,
   })
   const [saving, setSaving] = useState(false)
-  const [photoUrlInput, setPhotoUrlInput] = useState('/profile.png')
+  const [photoUrlInput, setPhotoUrlInput] = useState('/api/uploads/61a1449aa7134424907e483975873ec1.png')
   const [savingPhoto, setSavingPhoto] = useState(false)
   const [uploadingProjectImage, setUploadingProjectImage] = useState(false)
 
   const loadProjects = async () => {
     try {
       setLoading(true)
+      setError('')
       const res = await fetchProjects()
       setProjects(res.data || [])
     } catch (err) {

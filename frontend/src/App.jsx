@@ -34,6 +34,7 @@ export default function App() {
 
   const [currentPath, setCurrentPath] = useState(window.location.pathname)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authChecking, setAuthChecking] = useState(true)
 
   const isAdminRoute = currentPath.startsWith('/admin') || currentPath.startsWith('/login')
   const isAllProjectsRoute = currentPath.startsWith('/projects')
@@ -63,9 +64,17 @@ export default function App() {
   // Verify token when on admin route
   useEffect(() => {
     if (isAdminRoute) {
+      setAuthChecking(true)
+      const token = localStorage.getItem('admin_token')
+      if (!token) {
+        setIsAuthenticated(false)
+        setAuthChecking(false)
+        return
+      }
       verifyAuth()
         .then(() => setIsAuthenticated(true))
         .catch(() => setIsAuthenticated(false))
+        .finally(() => setAuthChecking(false))
     }
   }, [isAdminRoute])
 
@@ -105,7 +114,11 @@ export default function App() {
             <NeuralCosmos />
           </Suspense>
         </div>
-        {isAuthenticated ? (
+        {authChecking ? (
+          <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
+            Authenticating...
+          </div>
+        ) : isAuthenticated ? (
           <AdminDashboard onLogout={handleLogout} />
         ) : (
           <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />

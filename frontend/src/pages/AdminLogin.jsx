@@ -20,6 +20,7 @@ export default function AdminLogin({ onLoginSuccess }) {
       if (res.data && res.data.access_token) {
         localStorage.setItem('admin_token', res.data.access_token)
         onLoginSuccess()
+        window.location.reload()
       }
     } catch (err) {
       setError(err.response?.data?.detail || 'Authentication failed.')
@@ -166,13 +167,12 @@ export default function AdminLogin({ onLoginSuccess }) {
             paddingTop: '1rem',
             borderTop: '1px solid var(--border)',
             display: 'flex',
-            justify: 'space-between',
+            justifyContent: 'center',
             fontSize: '0.75rem',
             color: 'var(--text-muted)',
             fontFamily: 'JetBrains Mono, monospace',
           }}
         >
-          <span>JWT ENCRYPTED</span>
           <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
             ← Return to Site
           </a>

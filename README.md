@@ -19,9 +19,10 @@ A modern, responsive portfolio website for an AI Engineer featuring a FastAPI/Po
 - **Authentication:** JWT tokens
 - **WebServer:** Uvicorn
 
-### Database & Devops
-- **Database:** PostgreSQL 15 (Alpine)
-- **Containerization:** Docker & Docker Compose
+### Database & DevOps
+- **Database:** SQLite3 (`app.db`)
+- **Containerization:** Multi-stage Docker setup (Single Container)
+- **Deployment:** Render Blueprint (`render.yaml`)
 
 ---
 

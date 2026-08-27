@@ -2,8 +2,8 @@ import os
 import uuid
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
 from sqlalchemy.orm import Session
-from auth import get_current_admin
-from database import get_db
+from utils.auth import get_current_admin
+from core.database import get_db
 from models.upload import Upload
 
 router = APIRouter(prefix="/upload", tags=["upload"])

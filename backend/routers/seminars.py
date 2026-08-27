@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from database import get_db
+from core.database import get_db
 from models.seminar import Seminar
 from schemas.seminar import SeminarCreate, SeminarUpdate, SeminarResponse
-from auth import get_current_admin
+from utils.auth import get_current_admin
 
 router = APIRouter(prefix="/seminars", tags=["seminars"])
 
 
+@router.get("", response_model=List[SeminarResponse])
 @router.get("/", response_model=List[SeminarResponse])
 def get_all_seminars(db: Session = Depends(get_db)):
     return db.query(Seminar).order_by(Seminar.order_index.asc(), Seminar.created_at.desc()).all()

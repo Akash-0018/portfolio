@@ -18,7 +18,8 @@ const CAPABILITIES_SHOWCASE = [
 ]
 
 export default function Hero() {
-  const [photoUrl, setPhotoUrl] = useState('/profile.png')
+  const DEFAULT_PHOTO = getImageUrl('/api/uploads/61a1449aa7134424907e483975873ec1.png')
+  const [photoUrl, setPhotoUrl] = useState(DEFAULT_PHOTO)
 
   useEffect(() => {
     fetchProfile()
@@ -176,7 +177,7 @@ export default function Hero() {
                 filter: 'brightness(0.95) contrast(1.05)',
                 transition: 'transform 0.5s ease',
               }}
-              onError={(e) => { e.target.src = '/profile.png' }}
+              onError={(e) => { e.target.src = DEFAULT_PHOTO }}
             />
           </div>
         </motion.div>

@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+const API_BASE = import.meta.env.VITE_API_URL || ''
 
 const api = axios.create({
-  baseURL: `${API_BASE}/api`,
+  baseURL: API_BASE ? `${API_BASE}/api` : '/api',
   timeout: 10000,
 })
 
@@ -18,17 +18,17 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error)
 })
 
-export const fetchProjects = () => api.get('/projects')
+export const fetchProjects = () => api.get('/projects/')
 export const fetchFeaturedProjects = () => api.get('/projects/featured')
-export const submitContact = (data) => api.post('/contact', data)
+export const submitContact = (data) => api.post('/contact/', data)
 
 // Profile Photo APIs
 export const fetchProfile = () => api.get('/profile/')
 export const updateProfilePhoto = (photo_url) => api.put('/profile/', { photo_url })
 
 // Auth APIs
-export const loginAdmin = (username, password) => api.post('/auth/login', { username, password })
-export const verifyAuth = () => api.get('/auth/verify')
+export const loginAdmin = (username, password) => api.post('/auth/login/', { username, password })
+export const verifyAuth = () => api.get('/auth/verify/')
 
 // Admin Project Management APIs
 export const createProject = (projectData) => api.post('/projects/', projectData)

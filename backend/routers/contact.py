@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 from sqlalchemy.orm import Session
-from database import get_db
+from core.database import get_db
 from models.contact import ContactMessage
 from schemas.contact import ContactCreate, ContactResponse
-from email_utils import send_contact_notification
+from utils.email_utils import send_contact_notification
 
 router = APIRouter(prefix="/contact", tags=["contact"])
 

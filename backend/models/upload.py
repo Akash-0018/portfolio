@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, LargeBinary
-from database import Base
+from core.database import Base
 
 
 class Upload(Base):

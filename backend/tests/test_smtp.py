@@ -1,7 +1,7 @@
 import os
 import sys
-from email_utils import send_contact_notification
-from config import settings
+from utils.email_utils import send_contact_notification
+from core.config import settings
 
 print("--- Testing SMTP Mail Notification System ---")
 print(f"SMTP Host: {settings.SMTP_HOST}")

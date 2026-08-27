@@ -2,8 +2,8 @@
 Seed script — run once after DB is created to populate projects.
 Usage: python -m app.seed
 """
-from app.database import create_tables, SessionLocal
-from app.models.project import Project
+from core.database import create_tables, SessionLocal
+from models.project import Project
 
 
 PROJECTS = [
