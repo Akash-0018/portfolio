@@ -637,38 +637,61 @@ textarea.input-minimal {
 @media (max-width: 900px) {
   .hero-grid {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: 2rem;
     text-align: left;
-    padding-top: 5.5rem;
+    padding-top: 4rem;
   }
   
   .hero-grid > div:nth-child(2) {
     order: -1; /* Show portrait first on mobile/tablet */
-    max-width: 280px;
+    max-width: 240px;
     margin: 0 auto;
   }
 }
 
-/* ─── Mobile Navigation Overrides ─────────────────────────────────────────── */
+/* ─── Tablet & Mobile Responsive Adjustments ──────────────────────────────── */
+@media (max-width: 1024px) {
+  .scroll-section {
+    min-height: auto !important; /* Allow section height to shrink naturally on tablets so there is no huge empty whitespace */
+    padding: 4.5rem clamp(1.25rem, 4vw, 3rem) !important;
+  }
+}
+
 @media (max-width: 768px) {
+  .scroll-section {
+    padding: 3.5rem 1.25rem !important; /* Tighten vertical gap on mobile */
+  }
+
+  .card-minimal {
+    padding: 1.5rem !important; /* Compact card padding on mobile */
+  }
+
+  .headline-hero {
+    font-size: clamp(2.2rem, 8vw, 3.2rem) !important;
+  }
+
+  .headline-section {
+    font-size: clamp(1.75rem, 6vw, 2.5rem) !important;
+  }
+
   header[aria-label="Section navigation"] {
-    width: 92% !important;
-    gap: 0.75rem !important;
-    padding: 0.5rem 1rem !important;
-    top: 1rem !important;
-    justify-content: flex-start !important;
+    width: 94% !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem 0.85rem !important;
+    top: 0.85rem !important;
+    justify-content: space-between !important;
   }
   
   header[aria-label="Section navigation"] .identity-champagne {
-    display: none !important; /* Hide name badge on mobile nav to save horizontal space */
+    display: none !important;
   }
 
   header[aria-label="Section navigation"] div[style*="width: 1px"] {
-    display: none !important; /* Hide separator line */
+    display: none !important;
   }
   
   header[aria-label="Section navigation"] nav {
-    gap: 1rem !important;
+    gap: 0.85rem !important;
     overflow-x: auto !important;
     width: 100% !important;
     scrollbar-width: none !important;
@@ -681,9 +704,29 @@ textarea.input-minimal {
   }
   
   header[aria-label="Section navigation"] nav button {
-    gap: 0.25rem !important;
+    gap: 0.2rem !important;
     font-size: 12px !important;
-    flex-shrink: 0 !important; /* Prevent tabs from shrinking */
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Extra Small Phones (iPhone SE, Galaxy Fold foldouts) */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .scroll-section {
+    padding: 2.75rem 1rem !important;
+  }
+
+  .hero-name {
+    font-size: 2.5rem !important;
+  }
+
+  .btn {
+    width: 100%; /* Full width action buttons so text never overflows */
+    padding: 0.75rem 1.25rem;
   }
 }
 
@@ -697,4 +740,94 @@ textarea.input-minimal {
   50% {
     opacity: 0;
   }
+}
+
+/* ─── Light Mode Variable Overrides ────────────────────────────────────────── */
+html.light-mode {
+  --bg-void: #F4F3EF;
+  --bg-surface: #FFFFFF;
+  --card-bg: #EBE9E3;
+  --border: #D1CDC0;
+
+  --text-primary: #1A1917;
+  --text-secondary: #3D3B35;
+  --text-muted: #6B685E;
+
+  --champagne: #A67C1E;
+  --gold-secondary: #856113;
+  --lime: #4D7300;
+}
+
+html.light-mode body {
+  background: radial-gradient(circle at 20% 20%, rgba(77, 115, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(166, 124, 30, 0.06) 0%, transparent 60%),
+    #F4F3EF;
+  color: var(--text-primary);
+}
+
+html.light-mode header[aria-label="Section navigation"] {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: #D1CDC0 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light-mode header[aria-label="Section navigation"] nav button {
+  color: #59564D !important;
+}
+
+html.light-mode header[aria-label="Section navigation"] nav button:hover {
+  color: #1A1917 !important;
+}
+
+html.light-mode header[aria-label="Section navigation"] nav button.active-nav-link {
+  color: #1A1917 !important;
+  font-weight: 600;
+}
+
+html.light-mode .section-badge {
+  background: rgba(166, 124, 30, 0.1) !important;
+  border-color: rgba(166, 124, 30, 0.3) !important;
+  color: #856113 !important;
+}
+
+html.light-mode .card-minimal {
+  background: #FFFFFF !important;
+  border-color: #D1CDC0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-mode .card-minimal:hover {
+  border-color: #A67C1E !important;
+  box-shadow: 0 8px 30px rgba(166, 124, 30, 0.12) !important;
+}
+
+html.light-mode .btn-primary {
+  background: #1A1917 !important;
+  color: #FFFFFF !important;
+  border-color: #1A1917 !important;
+}
+
+html.light-mode .btn-primary:hover {
+  background: #A67C1E !important;
+  border-color: #A67C1E !important;
+  color: #FFFFFF !important;
+}
+
+html.light-mode .btn-secondary {
+  background: #FFFFFF !important;
+  color: #1A1917 !important;
+  border-color: #D1CDC0 !important;
+}
+
+html.light-mode .btn-secondary:hover {
+  border-color: #A67C1E !important;
+  color: #A67C1E !important;
+}
+
+html.light-mode .cursor-dot {
+  background: #1A1917;
+}
+
+html.light-mode .cursor-ring {
+  border-color: rgba(26, 25, 23, 0.4);
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { fetchSeminars } from '../../services/api'
+import { fetchSeminars, fetchProfile } from '../../services/api'
+import Loader from '../ui/Loader'
 
 const DEFAULT_SEMINARS = [
   {
@@ -13,8 +14,18 @@ const DEFAULT_SEMINARS = [
 
 export default function Seminar() {
   const [seminars, setSeminars] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
+    fetchProfile()
+      .then((res) => {
+        if (res.data && res.data.show_seminar !== undefined) {
+          setVisible(res.data.show_seminar)
+        }
+      })
+      .catch(() => {})
+
     fetchSeminars()
       .then((res) => {
         if (res.data && res.data.length > 0) {
@@ -26,7 +37,10 @@ export default function Seminar() {
       .catch(() => {
         setSeminars(DEFAULT_SEMINARS)
       })
+      .finally(() => setLoading(false))
   }, [])
+
+  if (!visible) return null
 
   return (
     <section
@@ -49,8 +63,11 @@ export default function Seminar() {
             Technical <span className="identity-champagne">Seminars & Speaking</span>.
           </h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'relative' }}>
-            {seminars.map((m, i) => (
+          {loading ? (
+            <Loader label="Loading technical seminars..." />
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'relative' }}>
+              {seminars.map((m, i) => (
               <motion.div
                 key={m.title}
                 className="card-minimal"
@@ -91,6 +108,7 @@ export default function Seminar() {
               </motion.div>
             ))}
           </div>
+          )}
         </motion.div>
       </div>
     </section>

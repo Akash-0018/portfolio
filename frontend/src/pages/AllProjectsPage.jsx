@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fetchProjects, getImageUrl } from '../services/api'
+import Loader from '../components/ui/Loader'
+import BackToTop from '../components/ui/BackToTop'
 
 const FALLBACK_PROJECTS = [
   { id: 1, title: 'Enterprise RAG Document Intelligence', description: 'Production hybrid retrieval system with multi-format chunking, pgvector indexing, and reranking.', tech_stack: ['Python', 'FastAPI', 'pgvector', 'LangChain'], category: 'RAG Infrastructure', featured: true, order_index: 1 },
@@ -131,6 +133,7 @@ export default function AllProjectsPage() {
   const [activeCategory, setActiveCategory] = useState('All')
 
   useEffect(() => {
+    const startTime = Date.now()
     fetchProjects()
       .then((res) => {
         if (res.data && res.data.length > 0) {
@@ -142,7 +145,11 @@ export default function AllProjectsPage() {
       .catch(() => {
         setProjects(FALLBACK_PROJECTS)
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        const elapsed = Date.now() - startTime
+        const delay = Math.max(0, 2500 - elapsed)
+        setTimeout(() => setLoading(false), delay)
+      })
   }, [])
 
   const categories = ['All', ...new Set(projects.map((p) => p.category).filter(Boolean))]
@@ -227,9 +234,7 @@ export default function AllProjectsPage() {
 
         {/* Grid */}
         {loading ? (
-          <div className="project-metadata" style={{ color: 'var(--text-muted)' }}>
-            Loading complete archive...
-          </div>
+          <Loader label="Loading complete AI project archive..." />
         ) : filteredProjects.length === 0 ? (
           <div className="project-metadata" style={{ color: 'var(--text-muted)', padding: '3rem 0' }}>
             No matching engineering systems found.
@@ -304,6 +309,7 @@ export default function AllProjectsPage() {
       </div>
 
       <ProjectModal project={selected} onClose={() => setSelected(null)} />
+      <BackToTop />
     </div>
   )
 }

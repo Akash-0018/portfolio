@@ -22,8 +22,9 @@ export const fetchProjects = () => api.get('/projects/')
 export const fetchFeaturedProjects = () => api.get('/projects/featured')
 export const submitContact = (data) => api.post('/contact/', data)
 
-// Profile Photo APIs
+// Profile Settings APIs
 export const fetchProfile = () => api.get('/profile/')
+export const updateProfile = (data) => api.put('/profile/', data)
 export const updateProfilePhoto = (photo_url) => api.put('/profile/', { photo_url })
 
 // Auth APIs

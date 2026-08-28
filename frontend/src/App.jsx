@@ -11,6 +11,7 @@ import NeuralCosmos from './components/canvas/NeuralCosmos'
 import LoadingScreen from './components/ui/LoadingScreen'
 import CustomCursor from './components/ui/CustomCursor'
 import CosmosMap from './components/ui/CosmosMap'
+import BackToTop from './components/ui/BackToTop'
 
 // Sections
 import Hero from './components/sections/Hero'
@@ -180,6 +181,9 @@ export default function App() {
           <Footer />
         </main>
       )}
+
+      {/* Floating Back to Top Widget */}
+      <BackToTop />
     </>
   )
 }

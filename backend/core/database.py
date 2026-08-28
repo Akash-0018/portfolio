@@ -43,3 +43,12 @@ def get_db():
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
+    # Ensure missing columns in existing SQLite DB tables are automatically added
+    if db_url.startswith("sqlite"):
+        try:
+            with engine.connect() as conn:
+                from sqlalchemy import text
+                conn.execute(text("ALTER TABLE profile_settings ADD COLUMN show_seminar BOOLEAN DEFAULT 1;"))
+                conn.commit()
+        except Exception:
+            pass # Column already exists

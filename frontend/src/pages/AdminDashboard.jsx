@@ -35,7 +35,9 @@ export default function AdminDashboard({ onLogout }) {
   })
   const [saving, setSaving] = useState(false)
   const [photoUrlInput, setPhotoUrlInput] = useState('/api/uploads/61a1449aa7134424907e483975873ec1.png')
+  const [showSeminars, setShowSeminars] = useState(true)
   const [savingPhoto, setSavingPhoto] = useState(false)
+  const [savingToggle, setSavingToggle] = useState(false)
   const [uploadingProjectImage, setUploadingProjectImage] = useState(false)
 
   const loadProjects = async () => {
@@ -66,6 +68,7 @@ export default function AdminDashboard({ onLogout }) {
     fetchProfile()
       .then((res) => {
         if (res.data?.photo_url) setPhotoUrlInput(res.data.photo_url)
+        if (res.data?.show_seminar !== undefined) setShowSeminars(res.data.show_seminar)
       })
       .catch(() => {})
   }, [])
@@ -113,6 +116,20 @@ export default function AdminDashboard({ onLogout }) {
       alert('Failed to update photo.')
     } finally {
       setSavingPhoto(false)
+    }
+  }
+
+  const handleSeminarToggle = async (e) => {
+    const newValue = e.target.checked
+    setShowSeminars(newValue)
+    setSavingToggle(true)
+    try {
+      await updateProfile({ show_seminar: newValue })
+    } catch (err) {
+      setShowSeminars(!newValue)
+      alert('Failed to update seminar visibility in DB.')
+    } finally {
+      setSavingToggle(false)
     }
   }
 
@@ -278,42 +295,99 @@ export default function AdminDashboard({ onLogout }) {
         </div>
       </div>
 
-      {/* Profile Photo Settings Card */}
-      <div className="card-minimal" style={{ marginBottom: '2.5rem', borderColor: 'var(--champagne)' }}>
-        <h2 className="identity-champagne" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>
-          ◈ Profile Photograph Settings
-        </h2>
-        <form onSubmit={handlePhotoSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ width: '60px', height: '60px', borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}>
-            <img src={photoUrlInput} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = '/profile.png' }} />
+      {/* Profile Photo & Section Visibility Settings Card */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        <div className="card-minimal" style={{ borderColor: 'var(--champagne)' }}>
+          <h2 className="identity-champagne" style={{ fontSize: '1.15rem', fontWeight: 600, marginBottom: '1rem' }}>
+            ◈ Profile Photograph Settings
+          </h2>
+          <form onSubmit={handlePhotoSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--border)', flexShrink: 0 }}>
+                <img src={photoUrlInput} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = '/profile.png' }} />
+              </div>
+              <input
+                className="input-minimal"
+                style={{ flex: 1 }}
+                placeholder="PROFILE PHOTO URL"
+                value={photoUrlInput}
+                onChange={(e) => setPhotoUrlInput(e.target.value)}
+                required
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <input
+                type="file"
+                accept="image/*"
+                id="profile-photo-file"
+                style={{ display: 'none' }}
+                onChange={handleProfilePhotoUpload}
+              />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
+                onClick={() => document.getElementById('profile-photo-file').click()}
+                disabled={savingPhoto}
+              >
+                Choose File
+              </button>
+              <button type="submit" className="btn btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }} disabled={savingPhoto}>
+                {savingPhoto ? 'Saving...' : 'Update Photo'}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Seminar Section Display Toggle */}
+        <div className="card-minimal" style={{ borderColor: 'var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <h2 className="identity-champagne" style={{ fontSize: '1.15rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              ◈ Section Visibility Control
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4', marginBottom: '1.25rem' }}>
+              Toggle whether the Technical Seminars & Speaking section is publicly displayed on the portfolio site. Setting is stored persistently in DB.
+            </p>
           </div>
-          <input
-            className="input-minimal"
-            style={{ flex: 1, minWidth: '200px' }}
-            placeholder="PROFILE PHOTO URL (e.g. /profile.png or hosted image link)"
-            value={photoUrlInput}
-            onChange={(e) => setPhotoUrlInput(e.target.value)}
-            required
-          />
-          <input
-            type="file"
-            accept="image/*"
-            id="profile-photo-file"
-            style={{ display: 'none' }}
-            onChange={handleProfilePhotoUpload}
-          />
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => document.getElementById('profile-photo-file').click()}
-            disabled={savingPhoto}
-          >
-            Choose File
-          </button>
-          <button type="submit" className="btn btn-primary" disabled={savingPhoto}>
-            {savingPhoto ? 'Saving...' : 'Update Photo URL'}
-          </button>
-        </form>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 500 }}>
+              Display Seminars Section
+            </span>
+            <label style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={showSeminars}
+                onChange={handleSeminarToggle}
+                disabled={savingToggle}
+                style={{ opacity: 0, width: 0, height: 0 }}
+              />
+              <span
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: showSeminars ? 'var(--lime)' : '#3A3A3A',
+                  borderRadius: '34px',
+                  transition: '0.3s',
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    content: '""',
+                    height: '20px',
+                    width: '20px',
+                    left: showSeminars ? '26px' : '3px',
+                    bottom: '3px',
+                    backgroundColor: showSeminars ? '#121212' : '#FFFFFF',
+                    borderRadius: '50%',
+                    transition: '0.3s',
+                  }}
+                />
+              </span>
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}

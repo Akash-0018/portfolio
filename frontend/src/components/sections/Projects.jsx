@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fetchFeaturedProjects, getImageUrl } from '../../services/api'
+import Loader from '../ui/Loader'
 
 function ProjectModal({ project, onClose }) {
   if (!project) return null
@@ -160,6 +161,7 @@ export default function Projects() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const startTime = Date.now()
     fetchFeaturedProjects()
       .then((res) => setFeaturedProjects(res.data || []))
       .catch(() => {
@@ -169,7 +171,11 @@ export default function Projects() {
           { id: 3, title: 'Low-Latency Streaming AI Platform', description: 'High-concurrency chat and inference proxy supporting streaming responses and model routing.', tech_stack: ['FastAPI', 'Redis', 'OpenAI', 'React.js'], category: 'LLM Systems', featured: true, order_index: 3 },
         ])
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        const elapsed = Date.now() - startTime
+        const delay = Math.max(0, 2500 - elapsed)
+        setTimeout(() => setLoading(false), delay)
+      })
   }, [])
 
   return (
@@ -197,9 +203,7 @@ export default function Projects() {
             </div>
 
             {loading ? (
-              <div className="project-metadata" style={{ color: 'var(--text-muted)' }}>
-                Fetching featured architectures...
-              </div>
+              <Loader label="Fetching featured AI systems..." />
             ) : (
               <>
                 <div

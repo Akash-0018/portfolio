@@ -1,9 +1,30 @@
+import { useEffect, useState } from 'react'
 import usePortfolioStore from '../../store/portfolioStore'
-
-const SECTIONS = ['Overview', 'About', 'Tech-Stack', 'Projects', 'Timeline', 'Contact']
+import ThemeSwitch from './ThemeSwitch'
+import { fetchProfile } from '../../services/api'
 
 export default function CosmosMap() {
   const activeSection = usePortfolioStore((s) => s.activeSection)
+  const [showSeminar, setShowSeminar] = useState(true)
+
+  useEffect(() => {
+    fetchProfile()
+      .then((res) => {
+        if (res.data && res.data.show_seminar !== undefined) {
+          setShowSeminar(res.data.show_seminar)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const SECTIONS = [
+    { id: 0, label: 'Overview' },
+    { id: 1, label: 'About' },
+    { id: 2, label: 'Tech-Stack' },
+    { id: 3, label: 'Projects' },
+    ...(showSeminar ? [{ id: 4, label: 'Timeline' }] : []),
+    { id: 5, label: 'Contact' },
+  ]
 
   const scrollToSection = (index) => {
     const el = document.getElementById(`section-${index}`)
@@ -37,13 +58,13 @@ export default function CosmosMap() {
       <div style={{ width: '1px', height: '14px', background: 'var(--border)' }} />
 
       <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-        {SECTIONS.map((label, i) => {
-          const isActive = activeSection === i
+        {SECTIONS.map((sec) => {
+          const isActive = activeSection === sec.id
           return (
             <button
-              key={label}
-              onClick={() => scrollToSection(i)}
-              className="nav-link"
+              key={sec.label}
+              onClick={() => scrollToSection(sec.id)}
+              className={`nav-link ${isActive ? 'active-nav-link' : ''}`}
               style={{
                 background: 'none',
                 border: 'none',
@@ -59,7 +80,7 @@ export default function CosmosMap() {
                 padding: '0.2rem 0',
               }}
             >
-              <span>{label}</span>
+              <span>{sec.label}</span>
               {isActive && (
                 <div
                   style={{
@@ -75,6 +96,10 @@ export default function CosmosMap() {
           )
         })}
       </nav>
+
+      <div style={{ width: '1px', height: '14px', background: 'var(--border)' }} />
+
+      <ThemeSwitch />
     </header>
   )
 }
