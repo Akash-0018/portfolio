@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { fetchProjects, createProject, updateProject, deleteProject, fetchProfile, updateProfilePhoto, uploadFile, fetchSeminars, createSeminar, updateSeminar, deleteSeminar } from '../services/api'
+import { fetchProjects, createProject, updateProject, deleteProject, fetchProfile, updateProfile, updateProfilePhoto, uploadFile, fetchSeminars, createSeminar, updateSeminar, deleteSeminar } from '../services/api'
 
 const emptyForm = {
   title: '',
@@ -127,7 +127,8 @@ export default function AdminDashboard({ onLogout }) {
       await updateProfile({ show_seminar: newValue })
     } catch (err) {
       setShowSeminars(!newValue)
-      alert('Failed to update seminar visibility in DB.')
+      const errorMsg = err.response?.data?.detail || err.message || 'Unknown error'
+      alert(`Failed to update seminar visibility in DB: ${errorMsg}`)
     } finally {
       setSavingToggle(false)
     }
