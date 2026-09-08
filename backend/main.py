@@ -66,16 +66,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-@app.middleware("http")
-async def normalize_request_path(request, call_next):
-    # Strip any stray prepended '/*' or '/%2A' from request scope path
-    raw_path = request.scope.get("path", "")
-    if raw_path.startswith("/*") or raw_path.startswith("/%2A"):
-        cleaned = "/" + raw_path.lstrip("/*%2A")
-        request.scope["path"] = cleaned
-    response = await call_next(request)
-    return response
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
@@ -134,13 +124,19 @@ if os.path.exists(FRONTEND_DIST_DIR):
 
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
-        clean_path = urllib.parse.unquote(full_path).lstrip("*/")
-        # Allow requests to api/ or api/uploads to be handled by routers
-        if clean_path.startswith("api/") or full_path.startswith("api/"):
+        clean_path = urllib.parse.unquote(full_path).lstrip("/")
+        # Allow requests to api/ to be handled by the routers above
+        if clean_path.startswith("api/"):
             raise HTTPException(status_code=404, detail="API endpoint not found")
-        
-        file_path = os.path.join(FRONTEND_DIST_DIR, clean_path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
+
+        # Resolve against the dist directory and refuse anything that escapes it
+        # (e.g. "../../etc/passwd") before touching the filesystem.
+        dist_root = os.path.realpath(FRONTEND_DIST_DIR)
+        file_path = os.path.realpath(os.path.join(dist_root, clean_path))
+        if (
+            (file_path == dist_root or file_path.startswith(dist_root + os.sep))
+            and os.path.isfile(file_path)
+        ):
             return FileResponse(file_path)
         
         # Fallback to index.html for client-side SPA routing
