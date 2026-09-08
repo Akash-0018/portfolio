@@ -42,6 +42,10 @@ export const createSeminar = (seminarData) => api.post('/seminars/', seminarData
 export const updateSeminar = (id, seminarData) => api.put(`/seminars/${id}`, seminarData)
 export const deleteSeminar = (id) => api.delete(`/seminars/${id}`)
 
+// Admin Contact Inbox APIs
+export const fetchContactMessages = () => api.get('/contact/')
+export const deleteContactMessage = (id) => api.delete(`/contact/${id}`)
+
 // File Upload API
 export const uploadFile = (formData) => api.post('/upload/', formData, {
   headers: {

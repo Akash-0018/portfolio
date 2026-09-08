@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { fetchSeminars, fetchProfile } from '../../services/api'
+import { fetchSeminars } from '../../services/api'
+import usePortfolioStore from '../../store/portfolioStore'
 import Loader from '../ui/Loader'
 
 const DEFAULT_SEMINARS = [
@@ -15,17 +16,15 @@ const DEFAULT_SEMINARS = [
 export default function Seminar() {
   const [seminars, setSeminars] = useState([])
   const [loading, setLoading] = useState(true)
-  const [visible, setVisible] = useState(true)
+  const profile = usePortfolioStore((s) => s.profile)
+  const loadProfile = usePortfolioStore((s) => s.loadProfile)
+  const visible = profile?.show_seminar !== false
 
   useEffect(() => {
-    fetchProfile()
-      .then((res) => {
-        if (res.data && res.data.show_seminar !== undefined) {
-          setVisible(res.data.show_seminar)
-        }
-      })
-      .catch(() => {})
+    loadProfile()
+  }, [loadProfile])
 
+  useEffect(() => {
     fetchSeminars()
       .then((res) => {
         if (res.data && res.data.length > 0) {

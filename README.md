@@ -1,126 +1,174 @@
 # Akash PG — Portfolio Site
 
-A modern, responsive portfolio website for an AI Engineer featuring a FastAPI/PostgreSQL backend and a React/Vite/Three.js/Tailwind CSS frontend.
+A portfolio site for an AI Engineer: a FastAPI + SQLite backend with a small
+admin CMS, and a React/Vite frontend with a Three.js background.
+
+The production deployment is a **single container** — the backend serves the
+built React bundle and the API from the same origin.
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 ### Frontend
-- **Framework:** React + Vite
-- **Styling:** Vanilla CSS & Tailwind CSS (if configured)
-- **3D Graphics & Animations:** Three.js / React Three Fiber, GSAP, Framer Motion
-- **State Management:** Zustand
-- **HTTP Client:** Axios
+- **Framework:** React 19 + Vite
+- **Routing:** React Router
+- **Styling:** Plain CSS (`src/index.css`) with CSS custom properties, plus
+  inline style objects. *No Tailwind.*
+- **3D / animation:** Three.js via React Three Fiber, Framer Motion, GSAP
+- **State:** Zustand
+- **HTTP:** Axios
 
 ### Backend
-- **Framework:** FastAPI (Python 3.10+)
-- **Database ORM:** SQLAlchemy
-- **Authentication:** JWT tokens
-- **WebServer:** Uvicorn
+- **Framework:** FastAPI (Python 3.11)
+- **ORM:** SQLAlchemy 2.x
+- **Migrations:** Alembic
+- **Auth:** JWT (PyJWT) with bcrypt password hashing
+- **Server:** Uvicorn
 
-### Database & DevOps
-- **Database:** SQLite3 (`app.db`)
-- **Containerization:** Multi-stage Docker setup (Single Container)
-- **Deployment:** Render Blueprint (`render.yaml`)
+### Database & deployment
+- **Database:** SQLite (`app.db`; a persistent disk at `/app/data` on Render)
+- **Container:** Multi-stage Dockerfile (Node build → Python runtime)
+- **Hosting:** Render Blueprint (`render.yaml`)
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
-├── backend/               # FastAPI application code
-│   ├── models/            # SQLAlchemy database models
-│   ├── routers/           # API endpoint route handlers
-│   ├── schemas/           # Pydantic validation schemas
-│   ├── uploads/           # Useruploaded static assets
-│   ├── main.py            # Backend entrypoint & startup lifespans
-│   └── requirements.txt   # Python dependencies
-├── frontend/              # Vite + React frontend code
-│   ├── src/               # React components, styles, hooks, and pages
-│   ├── package.json       # Node.js dependencies & scripts
-│   └── vite.config.js     # Vite configuration
-└── docker-compose.yml     # Multi-container local orchestration
+├── backend/
+│   ├── core/              # Settings, engine/session, migration runner
+│   ├── models/            # SQLAlchemy models
+│   ├── schemas/           # Pydantic request/response models
+│   ├── routers/           # API route handlers
+│   ├── utils/             # Auth, email, rate limiting
+│   ├── migrations/        # Alembic environment and versions
+│   ├── scripts/           # Seed / admin-rotation scripts
+│   ├── uploads/           # Legacy on-disk uploads (new ones go to the DB)
+│   ├── alembic.ini
+│   ├── main.py            # App entrypoint, lifespan, SPA fallback
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/    # canvas/ sections/ ui/
+│   │   ├── pages/         # Home, AllProjects, Admin, 404
+│   │   ├── constants/     # Offline fallback data
+│   │   ├── services/      # Axios client + endpoint bindings
+│   │   └── store/         # Zustand store
+│   └── vite.config.js
+├── Dockerfile
+├── docker-compose.yml
+└── render.yaml
 ```
 
 ---
 
-## 🛠️ Getting Started
+## Configuration
 
-### Method 1: Using Docker Compose (Recommended)
+All secrets come from the environment. `backend/.env` is gitignored; create it
+from the table below.
 
-1. Ensure you have **Docker** and **Docker Compose** installed on your machine.
-2. In the root directory, run the following command to build and start both frontend and backend services:
-   ```bash
-   docker compose up --build
-   ```
-3. Once running, access the services:
-   - **Frontend:** [http://localhost:5173](http://localhost:5173)
-   - **Backend API:** [http://localhost:8000](http://localhost:8000)
-   - **API Docs (Swagger UI):** [http://localhost:8000/docs](http://localhost:8000/docs)
-
-### Method 2: Running Locally (Without Docker)
-
-#### 1. Backend Setup
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a Python virtual environment:
-   ```bash
-   python -m venv .venv
-   # Windows:
-   .\.venv\Scripts\activate
-   # macOS/Linux:
-   source .venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Start the FastAPI development server:
-   ```bash
-   python main.py
-   # or
-   uvicorn main:app --reload --port 8000
-   ```
-
-#### 2. Frontend Setup
-1. Navigate to the frontend directory:
-   ```bash
-   cd ../frontend
-   ```
-2. Install npm packages:
-   ```bash
-   npm install
-   ```
-3. Start the dev server:
-   ```bash
-   npm run dev
-   ```
+| Variable | Required | Notes |
+|---|---|---|
+| `SECRET_KEY` | **yes** | JWT signing key. The app refuses to start without it. Generate with `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `ADMIN_PASSWORD` | for first run | Seeds the initial admin. Without it the seeder is skipped and no admin exists. |
+| `ADMIN_USERNAME` | no | Defaults to `Akash` |
+| `ADMIN_EMAIL` | no | Login identity and contact-notification recipient |
+| `DATABASE_URL` | no | Defaults to `sqlite:///./app.db` |
+| `CORS_ORIGINS` | no | Comma-separated. Only needed for front-ends on a *different* origin. Never `*` — the API sends credentials. |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | no | Contact-form notification email. If unset, notifications are skipped; messages are still stored and readable in the admin inbox. |
 
 ---
 
-## 🗄️ Database Access
+## Getting Started
 
-When running via Docker Compose, you can access the PostgreSQL shell inside the running database container.
+### Local development (two processes)
 
-### Docker Exec Command to Access DB
-
-To launch the interactive `psql` shell in the database container, run:
+**Backend**
 
 ```bash
-docker exec -it portfolio_db psql -U portfolio_user -d portfolio_db
+cd backend
+python -m venv .venv
+source .venv/bin/activate      # Windows: .\.venv\Scripts\activate
+pip install -r requirements.txt
+python main.py                 # http://127.0.0.1:8000
 ```
 
-#### Database Credentials (from `docker-compose.yml`):
-- **User (`-U`):** `portfolio_user`
-- **Database (`-d`):** `portfolio_db`
-- **Password:** `portfolio_pass` (if prompted, or automatically resolved from environment)
-- **Local port forwarding:** `5435` (connect from local tools using host `localhost` and port `5435`)
+Migrations run automatically on startup. API docs: http://127.0.0.1:8000/docs
 
-#### Useful commands inside `psql`:
-- List databases: `\l`
-- List tables: `\dt`
-- Describe a table: `\d table_name`
-- Exit shell: `\q` or `exit`
+**Frontend**
+
+```bash
+cd frontend
+npm install
+npm run dev                    # http://localhost:5173
+```
+
+`frontend/.env.development` points the dev server at `http://127.0.0.1:8000`.
+
+### Docker (single container, production-shaped)
+
+```bash
+SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(48))") ADMIN_PASSWORD='choose-a-password' docker compose up --build
+```
+
+Everything is served from http://localhost:8000 — SPA and API on one origin.
+
+---
+
+## Database Migrations
+
+Alembic owns the schema. There is no `create_all()`.
+
+```bash
+cd backend
+alembic revision --autogenerate -m "describe the change"   # after editing models/
+alembic upgrade head                                       # apply (also runs at startup)
+alembic downgrade -1                                       # roll back one revision
+alembic current                                            # show the applied revision
+```
+
+A database created before Alembic was introduced is detected at startup and
+stamped at the baseline revision instead of having the initial migration
+replayed over its existing tables.
+
+### Inspecting the SQLite database
+
+```bash
+sqlite3 backend/app.db
+```
+
+```
+.tables            list tables
+.schema projects   show a table definition
+.quit
+```
+
+---
+
+## Admin
+
+Reach the dashboard at `/admin`, or press **Ctrl/Cmd + Alt + A** anywhere on the
+site. It manages projects, seminars, the profile photo, the seminar section's
+visibility, and the contact-form inbox.
+
+**Rotating the admin password:** the startup seeder only ever creates the *first*
+user, so change `ADMIN_PASSWORD` and then run:
+
+```bash
+cd backend
+python -m scripts.seed_user
+```
+
+---
+
+## Notes & Known Limits
+
+- Contact submissions are rate limited to **5 per IP per hour**, counted
+  in-process. The counters reset on restart and are not shared across workers;
+  a multi-process deployment needs Redis-backed limiting instead.
+- Uploaded images are stored as blobs in the database, not on disk, so they
+  survive redeploys on ephemeral filesystems. This is fine at portfolio scale
+  and would not be at larger volumes.
+- Admin JWTs live in `localStorage` and last 24 hours. There is no refresh or
+  server-side revocation.

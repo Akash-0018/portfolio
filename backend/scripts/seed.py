@@ -2,7 +2,8 @@
 Seed script — run once after DB is created to populate projects.
 Usage: python -m app.seed
 """
-from core.database import create_tables, SessionLocal
+from core.database import SessionLocal
+from core.migrations import run_migrations
 from models.project import Project
 
 
@@ -77,7 +78,7 @@ PROJECTS = [
 
 
 def seed():
-    create_tables()
+    run_migrations()
     session = SessionLocal()
     try:
         for p in PROJECTS:

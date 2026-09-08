@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import { loginAdmin } from '../services/api'
@@ -20,7 +21,6 @@ export default function AdminLogin({ onLoginSuccess }) {
       if (res.data && res.data.access_token) {
         localStorage.setItem('admin_token', res.data.access_token)
         onLoginSuccess()
-        window.location.reload()
       }
     } catch (err) {
       setError(err.response?.data?.detail || 'Authentication failed.')
@@ -173,9 +173,9 @@ export default function AdminLogin({ onLoginSuccess }) {
             fontFamily: 'JetBrains Mono, monospace',
           }}
         >
-          <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
+          <Link to="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
             ← Return to Site
-          </a>
+          </Link>
         </div>
       </motion.div>
     </div>

@@ -1,6 +1,12 @@
 import { create } from 'zustand'
+import { fetchProfile } from '../services/api'
 
 const THEME_STORAGE_KEY = 'portfolio_theme'
+
+export const DEFAULT_PROFILE = {
+  photo_url: '/api/uploads/61a1449aa7134424907e483975873ec1.png',
+  show_seminar: true,
+}
 
 // localStorage throws in some contexts (private mode, blocked site data), and the
 // theme must never be the reason the app fails to boot.
@@ -20,7 +26,11 @@ const persistTheme = (theme) => {
   }
 }
 
-const usePortfolioStore = create((set) => ({
+// Module-level so concurrent callers on first paint share a single request
+// rather than each firing their own.
+let profileRequest = null
+
+const usePortfolioStore = create((set, get) => ({
   activeSection: 0,
   setActiveSection: (index) => set({ activeSection: index }),
 
@@ -35,21 +45,35 @@ const usePortfolioStore = create((set) => ({
   setMouse: (x, y) => set({ mouseX: x, mouseY: y }),
 
   // Owned here rather than inside ThemeSwitch so that routes without the
-  // switch (/projects, /admin) still apply the stored theme.
+  // switch still apply the stored theme.
   theme: readStoredTheme(),
   setTheme: (theme) => {
     persistTheme(theme)
     set({ theme })
   },
 
-  hoveredNode: null,
-  setHoveredNode: (node) => set({ hoveredNode: node }),
+  // Shared profile settings. Hero, Seminar and the nav all need these; before
+  // this they each issued their own GET /api/profile on first paint.
+  profile: null,
+  loadProfile: async () => {
+    const cached = get().profile
+    if (cached) return cached
 
-  selectedProject: null,
-  setSelectedProject: (project) => set({ selectedProject: project }),
+    if (!profileRequest) {
+      profileRequest = fetchProfile()
+        .then((res) => res.data || DEFAULT_PROFILE)
+        .catch(() => DEFAULT_PROFILE)
+        .finally(() => {
+          profileRequest = null
+        })
+    }
 
-  projects: [],
-  setProjects: (projects) => set({ projects }),
+    const profile = await profileRequest
+    set({ profile })
+    return profile
+  },
+  // Used by the admin dashboard so edits are reflected without a reload.
+  setProfile: (profile) => set({ profile }),
 }))
 
 export default usePortfolioStore

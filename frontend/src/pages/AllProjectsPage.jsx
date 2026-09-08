@@ -1,130 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { fetchProjects, getImageUrl } from '../services/api'
+import FALLBACK_PROJECTS from '../constants/fallbackProjects'
 import Loader from '../components/ui/Loader'
 import BackToTop from '../components/ui/BackToTop'
 import ThemeSwitch from '../components/ui/ThemeSwitch'
-
-const FALLBACK_PROJECTS = [
-  { id: 1, title: 'Enterprise RAG Document Intelligence', description: 'Production hybrid retrieval system with multi-format chunking, pgvector indexing, and reranking.', tech_stack: ['Python', 'FastAPI', 'pgvector', 'LangChain'], category: 'RAG Infrastructure', featured: true, order_index: 1 },
-  { id: 2, title: 'Autonomous Multi-Agent Orchestrator', description: 'Stateful agent runtime built with LangGraph and Model Context Protocol (MCP) for complex workflows.', tech_stack: ['LangGraph', 'Python', 'MCP', 'FastAPI'], category: 'Agentic AI', featured: true, order_index: 2 },
-  { id: 3, title: 'Low-Latency Streaming AI Platform', description: 'High-concurrency chat and inference proxy supporting streaming responses and model routing.', tech_stack: ['FastAPI', 'Redis', 'OpenAI', 'React.js'], category: 'LLM Systems', featured: true, order_index: 3 },
-  { id: 4, title: 'Automated Code Review Engine', description: 'Agentic code analysis system providing multi-stage security, performance, and architecture audits.', tech_stack: ['Python', 'FastAPI', 'GitHub API', 'Docker'], category: 'AI Operations', featured: false, order_index: 4 },
-  { id: 5, title: 'Vector DB Benchmarking Toolkit', description: 'Performance comparison framework for Chroma, Qdrant, Pinecone, and pgvector under peak load.', tech_stack: ['Python', 'pgvector', 'ChromaDB', 'Locust'], category: 'Data & Indexing', featured: false, order_index: 5 },
-  { id: 6, title: 'Semantic Cache & Gateway Proxy', description: 'Sub-millisecond LLM response cache utilizing embedding similarity matching to reduce API costs.', tech_stack: ['FastAPI', 'Redis', 'SentenceTransformers'], category: 'LLM Systems', featured: false, order_index: 6 },
-]
-
-function ProjectModal({ project, onClose }) {
-  if (!project) return null
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(18, 18, 18, 0.85)',
-          backdropFilter: 'blur(16px)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2rem',
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.3 }}
-          onClick={(e) => e.stopPropagation()}
-          className="card-minimal"
-          style={{ maxWidth: '640px', width: '100%', position: 'relative', borderColor: 'var(--champagne)', padding: '1.75rem' }}
-        >
-          <button
-            onClick={onClose}
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-muted)',
-              fontSize: '1.25rem',
-              cursor: 'pointer',
-              zIndex: 10,
-            }}
-          >
-            ✕
-          </button>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-            <span className="identity-champagne project-metadata">
-              ◈ {project.category || 'SYSTEM ARCHITECTURE'}
-            </span>
-            {project.featured && (
-              <span
-                className="project-metadata"
-                style={{
-                  padding: '0.2rem 0.6rem',
-                  borderRadius: '999px',
-                  background: 'rgba(184, 255, 79, 0.1)',
-                  border: '1px solid var(--lime)',
-                  color: 'var(--lime)',
-                  fontSize: '11px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                }}
-              >
-                ★ FEATURED SYSTEM
-              </span>
-            )}
-          </div>
-
-          <h3 className="card-title" style={{ marginBottom: '0.75rem', fontSize: '1.4rem' }}>
-            {project.title}
-          </h3>
-
-          {project.image_url && (
-            <div style={{ width: '100%', height: '180px', borderRadius: '8px', overflow: 'hidden', marginBottom: '1.25rem', border: '1px solid var(--border)' }}>
-              <img src={getImageUrl(project.image_url)} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-          )}
-
-          <p className="card-description" style={{ marginBottom: '1.25rem', fontSize: '0.88rem', lineHeight: '1.45' }}>
-            {project.long_description || project.description}
-          </p>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.5rem' }}>
-            {project.tech_stack?.map((tech) => (
-              <span key={tech} className="project-metadata" style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-                {tech}
-              </span>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            {project.github_url && (
-              <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '0.4rem 1.25rem', fontSize: '0.8rem' }}>
-                GitHub Repository ↗
-              </a>
-            )}
-            {project.live_url && (
-              <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '0.4rem 1.25rem', fontSize: '0.8rem' }}>
-                Live System ↗
-              </a>
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  )
-}
+import ProjectModal from '../components/ui/ProjectModal'
 
 export default function AllProjectsPage() {
   const [projects, setProjects] = useState([])
@@ -173,18 +55,13 @@ export default function AllProjectsPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {/* Back Link + theme toggle */}
         <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-          <a
-            href="/"
-            onClick={(e) => {
-              e.preventDefault()
-              window.history.pushState({}, '', '/')
-              window.dispatchEvent(new Event('popstate'))
-            }}
+          <Link
+            to="/"
             className="project-metadata identity-champagne"
             style={{ textDecoration: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
           >
             ← Back to System Overview
-          </a>
+          </Link>
           <ThemeSwitch />
         </div>
 

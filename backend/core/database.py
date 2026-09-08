@@ -40,15 +40,6 @@ def get_db():
     finally:
         db.close()
 
-
-def create_tables():
-    Base.metadata.create_all(bind=engine)
-    # Ensure missing columns in existing SQLite DB tables are automatically added
-    if db_url.startswith("sqlite"):
-        try:
-            with engine.connect() as conn:
-                from sqlalchemy import text
-                conn.execute(text("ALTER TABLE profile_settings ADD COLUMN show_seminar BOOLEAN DEFAULT 1;"))
-                conn.commit()
-        except Exception:
-            pass # Column already exists
+# Schema is owned by Alembic (see core/migrations.py and backend/migrations/).
+# There is deliberately no create_all() here - two sources of truth for the
+# schema is how the previous "ALTER TABLE ... except: pass" hack came about.

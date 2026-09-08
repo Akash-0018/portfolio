@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { fetchProfile, getImageUrl } from '../../services/api'
+import { getImageUrl } from '../../services/api'
+import usePortfolioStore, { DEFAULT_PROFILE } from '../../store/portfolioStore'
 
 const CAPABILITIES_SHOWCASE = [
   {
@@ -18,16 +19,14 @@ const CAPABILITIES_SHOWCASE = [
 ]
 
 export default function Hero() {
-  const DEFAULT_PHOTO = getImageUrl('/api/uploads/61a1449aa7134424907e483975873ec1.png')
-  const [photoUrl, setPhotoUrl] = useState(DEFAULT_PHOTO)
+  const DEFAULT_PHOTO = getImageUrl(DEFAULT_PROFILE.photo_url)
+  const profile = usePortfolioStore((s) => s.profile)
+  const loadProfile = usePortfolioStore((s) => s.loadProfile)
+  const photoUrl = profile?.photo_url || DEFAULT_PROFILE.photo_url
 
   useEffect(() => {
-    fetchProfile()
-      .then((res) => {
-        if (res.data?.photo_url) setPhotoUrl(res.data.photo_url)
-      })
-      .catch(() => { })
-  }, [])
+    loadProfile()
+  }, [loadProfile])
 
   return (
     <section

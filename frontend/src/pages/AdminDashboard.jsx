@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ThemeSwitch from '../components/ui/ThemeSwitch'
-import { fetchProjects, createProject, updateProject, deleteProject, fetchProfile, updateProfile, updateProfilePhoto, uploadFile, fetchSeminars, createSeminar, updateSeminar, deleteSeminar } from '../services/api'
+import { fetchProjects, createProject, updateProject, deleteProject, fetchProfile, updateProfile, updateProfilePhoto, uploadFile, fetchSeminars, createSeminar, updateSeminar, deleteSeminar, fetchContactMessages, deleteContactMessage } from '../services/api'
+import usePortfolioStore from '../store/portfolioStore'
 
 const emptyForm = {
   title: '',
@@ -19,7 +20,11 @@ const emptyForm = {
 export default function AdminDashboard({ onLogout }) {
   const [projects, setProjects] = useState([])
   const [seminars, setSeminars] = useState([])
+  const [messages, setMessages] = useState([])
   const [activeTab, setActiveTab] = useState('projects')
+  // Keep the public site's cached profile in sync: router navigation back to /
+  // no longer reloads the page, so a stale cache would survive an edit.
+  const syncProfile = usePortfolioStore((s) => s.setProfile)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -47,7 +52,7 @@ export default function AdminDashboard({ onLogout }) {
       setError('')
       const res = await fetchProjects()
       setProjects(res.data || [])
-    } catch (err) {
+    } catch {
       setError('Failed to fetch projects.')
     } finally {
       setLoading(false)
@@ -58,14 +63,24 @@ export default function AdminDashboard({ onLogout }) {
     try {
       const res = await fetchSeminars()
       setSeminars(res.data || [])
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch seminars.')
+    }
+  }
+
+  const loadMessages = async () => {
+    try {
+      const res = await fetchContactMessages()
+      setMessages(res.data || [])
+    } catch {
+      console.error('Failed to fetch contact messages.')
     }
   }
 
   useEffect(() => {
     loadProjects()
     loadSeminars()
+    loadMessages()
     fetchProfile()
       .then((res) => {
         if (res.data?.photo_url) setPhotoUrlInput(res.data.photo_url)
@@ -111,9 +126,10 @@ export default function AdminDashboard({ onLogout }) {
     e.preventDefault()
     setSavingPhoto(true)
     try {
-      await updateProfilePhoto(photoUrlInput)
-      alert('Profile photo updated successfully! Refresh main site to see changes.')
-    } catch (err) {
+      const res = await updateProfilePhoto(photoUrlInput)
+      syncProfile(res.data)
+      alert('Profile photo updated successfully.')
+    } catch {
       alert('Failed to update photo.')
     } finally {
       setSavingPhoto(false)
@@ -125,7 +141,8 @@ export default function AdminDashboard({ onLogout }) {
     setShowSeminars(newValue)
     setSavingToggle(true)
     try {
-      await updateProfile({ show_seminar: newValue })
+      const res = await updateProfile({ show_seminar: newValue })
+      syncProfile(res.data)
     } catch (err) {
       setShowSeminars(!newValue)
       const errorMsg = err.response?.data?.detail || err.message || 'Unknown error'
@@ -135,6 +152,16 @@ export default function AdminDashboard({ onLogout }) {
     }
   }
 
+
+  const handleMessageDelete = async (id) => {
+    if (!window.confirm('Delete this message permanently?')) return
+    try {
+      await deleteContactMessage(id)
+      setMessages((prev) => prev.filter((m) => m.id !== id))
+    } catch {
+      alert('Failed to delete message')
+    }
+  }
 
   const handleOpenAdd = () => {
     const maxOrderIndex = projects.reduce((max, p) => (p.order_index > max ? p.order_index : max), 0)
@@ -168,7 +195,7 @@ export default function AdminDashboard({ onLogout }) {
     try {
       await deleteProject(id)
       setProjects((prev) => prev.filter((p) => p.id !== id))
-    } catch (err) {
+    } catch {
       alert('Failed to delete project')
     }
   }
@@ -231,7 +258,7 @@ export default function AdminDashboard({ onLogout }) {
     try {
       await deleteSeminar(id)
       setSeminars((prev) => prev.filter((s) => s.id !== id))
-    } catch (err) {
+    } catch {
       alert('Failed to delete seminar')
     }
   }
@@ -283,13 +310,19 @@ export default function AdminDashboard({ onLogout }) {
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <ThemeSwitch />
-          {activeTab === 'projects' ? (
+          {activeTab === 'projects' && (
             <button onClick={handleOpenAdd} className="btn btn-primary">
               + New Project
             </button>
-          ) : (
+          )}
+          {activeTab === 'seminars' && (
             <button onClick={handleOpenSeminarAdd} className="btn btn-primary">
               + New Seminar
+            </button>
+          )}
+          {activeTab === 'messages' && (
+            <button onClick={loadMessages} className="btn btn-primary">
+              Refresh Inbox
             </button>
           )}
           <button onClick={onLogout} className="btn btn-secondary">
@@ -425,6 +458,21 @@ export default function AdminDashboard({ onLogout }) {
         >
           ◈ MANAGE SEMINARS
         </button>
+        <button
+          onClick={() => setActiveTab('messages')}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: activeTab === 'messages' ? 'var(--lime)' : 'var(--text-secondary)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            paddingBottom: '0.25rem',
+            borderBottom: activeTab === 'messages' ? '2px solid var(--lime)' : 'none',
+          }}
+        >
+          ◈ INBOX{messages.length > 0 ? ` (${messages.length})` : ''}
+        </button>
       </div>
 
       {/* Grid */}
@@ -432,6 +480,47 @@ export default function AdminDashboard({ onLogout }) {
         <div style={{ color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, monospace' }}>Loading content...</div>
       ) : error ? (
         <div style={{ color: 'var(--error)', padding: '1rem', border: '1px solid var(--error)', borderRadius: '12px' }}>{error}</div>
+      ) : activeTab === 'messages' ? (
+        messages.length === 0 ? (
+          <div className="project-metadata" style={{ color: 'var(--text-muted)', padding: '2rem 0' }}>
+            No contact messages received yet.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {messages.map((msg) => (
+              <div key={msg.id} className="card-minimal">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <div>
+                    <h3 className="card-title" style={{ marginBottom: '0.25rem' }}>
+                      {msg.subject || '(no subject)'}
+                    </h3>
+                    <div className="project-metadata" style={{ color: 'var(--text-muted)' }}>
+                      {msg.name} &middot;{' '}
+                      <a href={`mailto:${msg.email}`} style={{ color: 'var(--champagne)', textDecoration: 'none' }}>
+                        {msg.email}
+                      </a>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <span className="project-metadata" style={{ color: 'var(--text-muted)' }}>
+                      {new Date(msg.created_at).toLocaleString()}
+                    </span>
+                    <button
+                      onClick={() => handleMessageDelete(msg.id)}
+                      className="btn btn-secondary"
+                      style={{ padding: '0.35rem 0.85rem', fontSize: '0.78rem', color: 'var(--error)' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                <p className="card-description" style={{ whiteSpace: 'pre-wrap', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
+                  {msg.message}
+                </p>
+              </div>
+            ))}
+          </div>
+        )
       ) : activeTab === 'projects' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
           {projects.map((project) => (

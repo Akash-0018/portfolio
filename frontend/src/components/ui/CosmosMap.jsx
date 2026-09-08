@@ -1,21 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import usePortfolioStore from '../../store/portfolioStore'
 import ThemeSwitch from './ThemeSwitch'
-import { fetchProfile } from '../../services/api'
 
 export default function CosmosMap() {
   const activeSection = usePortfolioStore((s) => s.activeSection)
-  const [showSeminar, setShowSeminar] = useState(true)
+  const profile = usePortfolioStore((s) => s.profile)
+  const loadProfile = usePortfolioStore((s) => s.loadProfile)
+  const showSeminar = profile?.show_seminar !== false
 
   useEffect(() => {
-    fetchProfile()
-      .then((res) => {
-        if (res.data && res.data.show_seminar !== undefined) {
-          setShowSeminar(res.data.show_seminar)
-        }
-      })
-      .catch(() => {})
-  }, [])
+    loadProfile()
+  }, [loadProfile])
 
   const SECTIONS = [
     { id: 0, label: 'Overview' },

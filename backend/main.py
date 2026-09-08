@@ -5,7 +5,8 @@ from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 import os
 import urllib.parse
-from core.database import create_tables, SessionLocal
+from core.database import SessionLocal
+from core.migrations import run_migrations
 from core.config import settings
 from routers import projects, contact, auth, profile, upload, seminars
 # Import models so SQLAlchemy registers them before create_all
@@ -17,8 +18,8 @@ from utils.auth import get_password_hash
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup — create tables if they don't exist
-    create_tables()
+    # Startup - bring the schema up to head before anything touches the DB
+    run_migrations()
     # Ensure uploads directory exists
     os.makedirs("uploads", exist_ok=True)
     

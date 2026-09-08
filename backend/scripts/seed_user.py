@@ -12,7 +12,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.config import settings
-from core.database import create_tables, SessionLocal
+from core.database import SessionLocal
+from core.migrations import run_migrations
 from models.user import User
 from utils.auth import get_password_hash
 
@@ -24,7 +25,7 @@ def seed_user():
             "environment variable) and re-run."
         )
 
-    create_tables()
+    run_migrations()
     db = SessionLocal()
     try:
         user = (
