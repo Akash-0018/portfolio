@@ -61,7 +61,7 @@ export default function Skills() {
                   style={{
                     fontSize: '1.1rem',
                     fontWeight: 600,
-                    color: '#FFFFFF',
+                    color: 'var(--text-primary)',
                     marginBottom: '1.25rem',
                     display: 'flex',
                     alignItems: 'center',

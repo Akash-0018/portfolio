@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import ThemeSwitch from '../components/ui/ThemeSwitch'
 import { fetchProjects, createProject, updateProject, deleteProject, fetchProfile, updateProfile, updateProfilePhoto, uploadFile, fetchSeminars, createSeminar, updateSeminar, deleteSeminar } from '../services/api'
 
 const emptyForm = {
@@ -267,9 +268,9 @@ export default function AdminDashboard({ onLogout }) {
         padding: '3rem 1.5rem',
         maxWidth: '1200px',
         margin: '0 auto',
-        color: '#FFFFFF',
-        fontFamily: 'Inter, sans-serif',
-        background: '#121212',
+        color: 'var(--text-primary)',
+        fontFamily: 'var(--font-sans)',
+        background: 'var(--bg-void)',
       }}
     >
       <div className="admin-header">
@@ -280,7 +281,8 @@ export default function AdminDashboard({ onLogout }) {
           <h1 style={{ fontSize: '2.25rem', fontWeight: 700 }}>System Control Dashboard</h1>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <ThemeSwitch />
           {activeTab === 'projects' ? (
             <button onClick={handleOpenAdd} className="btn btn-primary">
               + New Project
@@ -367,7 +369,7 @@ export default function AdminDashboard({ onLogout }) {
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  backgroundColor: showSeminars ? 'var(--lime)' : '#3A3A3A',
+                  backgroundColor: showSeminars ? 'var(--lime)' : 'var(--border)',
                   borderRadius: '34px',
                   transition: '0.3s',
                 }}
@@ -380,7 +382,7 @@ export default function AdminDashboard({ onLogout }) {
                     width: '20px',
                     left: showSeminars ? '26px' : '3px',
                     bottom: '3px',
-                    backgroundColor: showSeminars ? '#121212' : '#FFFFFF',
+                    backgroundColor: showSeminars ? 'var(--bg-void)' : 'var(--text-primary)',
                     borderRadius: '50%',
                     transition: '0.3s',
                   }}

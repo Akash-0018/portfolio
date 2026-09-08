@@ -1,23 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import usePortfolioStore from '../../store/portfolioStore'
 import './ThemeSwitch.css'
 
 export default function ThemeSwitch() {
-  const [isDark, setIsDark] = useState(() => {
-    return localStorage.getItem('portfolio_theme') !== 'light'
-  })
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.remove('light-mode')
-      localStorage.setItem('portfolio_theme', 'dark')
-    } else {
-      document.documentElement.classList.add('light-mode')
-      localStorage.setItem('portfolio_theme', 'light')
-    }
-  }, [isDark])
+  // Theme lives in the store; App applies the class so routes that don't render
+  // this switch still honour the stored preference.
+  const theme = usePortfolioStore((s) => s.theme)
+  const setTheme = usePortfolioStore((s) => s.setTheme)
+  const isDark = theme === 'dark'
 
   const toggleTheme = (e) => {
-    setIsDark(e.target.checked)
+    setTheme(e.target.checked ? 'dark' : 'light')
   }
 
   return (

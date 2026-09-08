@@ -26,7 +26,7 @@ export default function CustomCursor() {
 
     const handleMouseOver = (e) => {
       const target = e.target.closest('a, button, input, textarea, [role="button"], .card-minimal, [data-cursor]')
-      if (target && !target.classList.contains('secret-link')) {
+      if (target) {
         ringRef.current?.classList.add('hovering')
       } else {
         ringRef.current?.classList.remove('hovering')

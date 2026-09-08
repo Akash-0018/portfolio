@@ -93,6 +93,9 @@ export default function Hero() {
                     fontSize: '12px',
                     letterSpacing: '0.1em',
                     marginBottom: '0.3rem',
+                    // Reserve two lines so labels that wrap don't push their
+                    // detail text out of line with the neighbouring columns.
+                    minHeight: '2.9em',
                   }}
                 >
                   ◈ {item.title}

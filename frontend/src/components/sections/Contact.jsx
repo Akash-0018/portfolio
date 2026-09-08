@@ -70,7 +70,7 @@ export default function Contact() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       <span className="identity-champagne">{link.icon}</span>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem', color: '#FFFFFF' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
                         {link.label}
                       </span>
                     </div>

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { fetchProjects, getImageUrl } from '../services/api'
 import Loader from '../components/ui/Loader'
 import BackToTop from '../components/ui/BackToTop'
+import ThemeSwitch from '../components/ui/ThemeSwitch'
 
 const FALLBACK_PROJECTS = [
   { id: 1, title: 'Enterprise RAG Document Intelligence', description: 'Production hybrid retrieval system with multi-format chunking, pgvector indexing, and reranking.', tech_stack: ['Python', 'FastAPI', 'pgvector', 'LangChain'], category: 'RAG Infrastructure', featured: true, order_index: 1 },
@@ -133,7 +134,6 @@ export default function AllProjectsPage() {
   const [activeCategory, setActiveCategory] = useState('All')
 
   useEffect(() => {
-    const startTime = Date.now()
     fetchProjects()
       .then((res) => {
         if (res.data && res.data.length > 0) {
@@ -145,11 +145,7 @@ export default function AllProjectsPage() {
       .catch(() => {
         setProjects(FALLBACK_PROJECTS)
       })
-      .finally(() => {
-        const elapsed = Date.now() - startTime
-        const delay = Math.max(0, 2500 - elapsed)
-        setTimeout(() => setLoading(false), delay)
-      })
+      .finally(() => setLoading(false))
   }, [])
 
   const categories = ['All', ...new Set(projects.map((p) => p.category).filter(Boolean))]
@@ -167,16 +163,16 @@ export default function AllProjectsPage() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#121212',
-        color: '#FFFFFF',
+        background: 'var(--bg-void)',
+        color: 'var(--text-primary)',
         padding: '6rem clamp(1.5rem, 5vw, 6rem)',
         position: 'relative',
         zIndex: 10,
       }}
     >
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        {/* Back Link */}
-        <div style={{ marginBottom: '2rem' }}>
+        {/* Back Link + theme toggle */}
+        <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
           <a
             href="/"
             onClick={(e) => {
@@ -189,6 +185,7 @@ export default function AllProjectsPage() {
           >
             ← Back to System Overview
           </a>
+          <ThemeSwitch />
         </div>
 
         <div className="section-badge project-metadata">

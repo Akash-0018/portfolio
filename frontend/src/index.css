@@ -29,6 +29,13 @@
   /* Fonts */
   --font-sans: 'Inter', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  /* Display/body faces. Canela and Akkurat are licensed and not loaded here, so
+     these resolve to the fallbacks. Defined at :root because .hero-* and the
+     footer both use them - previously they were scoped to .os-footer only, which
+     left the hero's font-family invalid and silently inheriting --font-sans. */
+  --font-canela: 'Canela', 'Cormorant Garamond', serif;
+  --font-akkurat: 'Akkurat', 'Inter', sans-serif;
+  --font-azeret: 'Azeret Mono', monospace;
   --radius: 18px;
 }
 
@@ -238,6 +245,45 @@ body {
   margin-bottom: 1rem;
 }
 
+/* ─── Content Primitives ────────────────────────────────────────── */
+/* These are applied throughout the JSX; they previously had no definition, so
+   card copy and metadata fell back to the body font at browser defaults. */
+.card-title {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.card-description {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Small monospaced metadata: categories, tech chips, inline CTAs. Deliberately
+   no text-transform - some call sites pass sentence-case copy. */
+.project-metadata {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+}
+
+.skill-name {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.font-canela {
+  font-family: var(--font-canela);
+}
+
 /* ─── Form Inputs ────────────────────────────────────────────────────────── */
 .input-minimal {
   width: 100%;
@@ -436,10 +482,6 @@ textarea.input-minimal {
   --text-muted-os: #8D9498;
   --champagne-os: #D9C8A3;
   --lime-os: #B8FF4F;
-
-  --font-canela: 'Canela', 'Cormorant Garamond', serif;
-  --font-akkurat: 'Akkurat', 'Inter', sans-serif;
-  --font-azeret: 'Azeret Mono', monospace;
 
   background-color: var(--bg-os);
   color: var(--text-primary-os);
@@ -756,6 +798,12 @@ html.light-mode {
   --champagne: #A67C1E;
   --gold-secondary: #856113;
   --lime: #4D7300;
+}
+
+/* The neural-net layer was designed against a dark ground; on cream its lines
+   read considerably heavier, so dial the whole layer back. */
+html.light-mode .canvas-container {
+  opacity: 0.14;
 }
 
 html.light-mode body {

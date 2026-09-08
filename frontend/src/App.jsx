@@ -30,7 +30,13 @@ import AdminDashboard from './pages/AdminDashboard'
 const SECTION_IDS = ['section-0', 'section-1', 'section-2', 'section-3', 'section-4', 'section-5']
 
 export default function App() {
-  const { isLoading, setIsLoading, setActiveSection } = usePortfolioStore()
+  // Select individually. `usePortfolioStore()` with no selector returns the whole
+  // state object, which is replaced on every set() - including the setMouse call
+  // fired on each mousemove - re-rendering this component and everything below it.
+  const isLoading = usePortfolioStore((s) => s.isLoading)
+  const setIsLoading = usePortfolioStore((s) => s.setIsLoading)
+  const setActiveSection = usePortfolioStore((s) => s.setActiveSection)
+  const theme = usePortfolioStore((s) => s.theme)
   useMousePosition()
 
   const [currentPath, setCurrentPath] = useState(window.location.pathname)
@@ -39,6 +45,12 @@ export default function App() {
 
   const isAdminRoute = currentPath.startsWith('/admin') || currentPath.startsWith('/login')
   const isAllProjectsRoute = currentPath.startsWith('/projects')
+
+  // Applied here rather than in ThemeSwitch so /projects and /admin - which
+  // don't render the switch - still honour the stored preference.
+  useEffect(() => {
+    document.documentElement.classList.toggle('light-mode', theme === 'light')
+  }, [theme])
 
   // Listen to path changes & secret keyboard shortcut (Ctrl + Alt + A)
   useEffect(() => {

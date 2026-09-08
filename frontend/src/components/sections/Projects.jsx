@@ -161,7 +161,6 @@ export default function Projects() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const startTime = Date.now()
     fetchFeaturedProjects()
       .then((res) => setFeaturedProjects(res.data || []))
       .catch(() => {
@@ -171,11 +170,7 @@ export default function Projects() {
           { id: 3, title: 'Low-Latency Streaming AI Platform', description: 'High-concurrency chat and inference proxy supporting streaming responses and model routing.', tech_stack: ['FastAPI', 'Redis', 'OpenAI', 'React.js'], category: 'LLM Systems', featured: true, order_index: 3 },
         ])
       })
-      .finally(() => {
-        const elapsed = Date.now() - startTime
-        const delay = Math.max(0, 2500 - elapsed)
-        setTimeout(() => setLoading(false), delay)
-      })
+      .finally(() => setLoading(false))
   }, [])
 
   return (

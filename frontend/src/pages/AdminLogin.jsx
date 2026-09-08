@@ -39,7 +39,7 @@ export default function AdminLogin({ onLoginSuccess }) {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '1.5rem',
-        background: '#121212',
+        background: 'var(--bg-void)',
       }}
     >
       <motion.div
@@ -58,7 +58,7 @@ export default function AdminLogin({ onLoginSuccess }) {
           <div className="identity-champagne" style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
             ◈
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.25rem' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
             Admin Control Center
           </h2>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, monospace' }}>
