@@ -9,10 +9,16 @@ services:
     envVars:
       - key: DATABASE_URL
         value: sqlite:////app/data/app.db
+      # The SPA is served from this same origin, so CORS only needs to list
+      # genuinely external front-ends. Never "*" alongside allow_credentials.
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://akash-aiportfolio.netlify.app"
       - key: SECRET_KEY
         generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
       - key: ADMIN_PASSWORD
         sync: false
       - key: SMTP_USER

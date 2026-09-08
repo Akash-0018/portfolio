@@ -12,6 +12,12 @@ services:
     environment:
       - DATABASE_URL=sqlite:////app/data/app.db
       - CORS_ORIGINS=http://localhost:8000,http://localhost:5173
+      # Required. Generate with:
+      #   python -c "import secrets; print(secrets.token_urlsafe(48))"
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
+      # Seeds the first admin user into an empty database.
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-Akash}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set}
     volumes:
       - portfolio_data:/app/data
       - ./backend/uploads:/app/uploads

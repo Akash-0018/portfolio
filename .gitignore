@@ -18,6 +18,10 @@ __pycache__/
 !/backend/uploads/.gitkeep
 !/backend/uploads/61a1449aa7134424907e483975873ec1.png
 
+# Local database (contains real data + admin password hash - never commit)
+/backend/app.db
+*.db-journal
+
 # Environment variables
 .env
 .env.local

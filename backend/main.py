@@ -24,16 +24,25 @@ async def lifespan(app: FastAPI):
     
     db = SessionLocal()
     try:
-        # Seed default admin user in DB if empty
+        # Seed the first admin user only into an empty database, and only when a
+        # password has been supplied via the environment. Never fall back to a
+        # hardcoded credential - an unseeded admin is safer than a public one.
         if db.query(User).count() == 0:
-            default_user = User(
-                username="Akash",
-                email="akashcse018@gmail.com",
-                hashed_password=get_password_hash("Pydev@2602!")
-            )
-            db.add(default_user)
-            db.commit()
-            print("[OK] Admin user created in DB: Akash / akashcse018@gmail.com")
+            if settings.ADMIN_PASSWORD:
+                default_user = User(
+                    username=settings.ADMIN_USERNAME,
+                    email=settings.ADMIN_EMAIL,
+                    hashed_password=get_password_hash(settings.ADMIN_PASSWORD),
+                )
+                db.add(default_user)
+                db.commit()
+                print(f"[OK] Admin user created in DB: {settings.ADMIN_USERNAME} / {settings.ADMIN_EMAIL}")
+            else:
+                print(
+                    "[WARN] No users in database and ADMIN_PASSWORD is not set - "
+                    "skipping admin seed. Set ADMIN_PASSWORD and restart, or run "
+                    "scripts/seed_user.py, to create the admin account."
+                )
         if db.query(Seminar).count() == 0:
             default_seminar = Seminar(
                 title='From ChatGPT to Autonomous AI Systems',
