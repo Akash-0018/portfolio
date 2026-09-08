@@ -9,21 +9,22 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.config import settings
 from core.database import SessionLocal
-from models.user import User
-from utils.auth import verify_password
+from core.security import verify_password
+from repositories.user_repository import UserRepository
 
 db = SessionLocal()
 try:
-    user_by_name = db.query(User).filter(User.username.ilike(settings.ADMIN_USERNAME)).first()
-    print("User by username:", user_by_name.username if user_by_name else "None")
+    users = UserRepository(db)
+    user = users.find_by_identity(settings.ADMIN_USERNAME)
+    print("User by username:", user.username if user else "None")
 
-    user_by_email = db.query(User).filter(User.email.ilike(settings.ADMIN_EMAIL)).first()
-    print("User by email:", user_by_email.email if user_by_email else "None")
+    by_email = users.find_by_identity(settings.ADMIN_EMAIL)
+    print("User by email:", by_email.email if by_email else "None")
 
-    if user_by_name and settings.ADMIN_PASSWORD:
+    if user and settings.ADMIN_PASSWORD:
         print(
             "Password verification:",
-            verify_password(settings.ADMIN_PASSWORD, user_by_name.hashed_password),
+            verify_password(settings.ADMIN_PASSWORD, user.hashed_password),
         )
     elif not settings.ADMIN_PASSWORD:
         print("Password verification: skipped (ADMIN_PASSWORD not set)")

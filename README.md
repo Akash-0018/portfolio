@@ -37,16 +37,21 @@ built React bundle and the API from the same origin.
 
 ```text
 ├── backend/
-│   ├── core/              # Settings, engine/session, migration runner
+│   ├── api/
+│   │   ├── router.py      # MAIN ROUTES FILE - registers every route module
+│   │   ├── deps.py        # Shared dependencies (services, auth, rate limit)
+│   │   └── routes/        # Thin HTTP handlers, one module per resource
+│   ├── services/          # Business logic; raises domain errors, not HTTP
+│   ├── repositories/      # The only layer that touches SQLAlchemy
 │   ├── models/            # SQLAlchemy models
 │   ├── schemas/           # Pydantic request/response models
-│   ├── routers/           # API route handlers
-│   ├── utils/             # Auth, email, rate limiting
+│   ├── core/              # Settings, engine/session, security, migrations
+│   ├── utils/             # Email, rate limiting
 │   ├── migrations/        # Alembic environment and versions
 │   ├── scripts/           # Seed / admin-rotation scripts
 │   ├── uploads/           # Legacy on-disk uploads (new ones go to the DB)
 │   ├── alembic.ini
-│   ├── main.py            # App entrypoint, lifespan, SPA fallback
+│   ├── main.py            # App entrypoint, lifespan, error mapping, SPA fallback
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
@@ -63,6 +68,28 @@ built React bundle and the API from the same origin.
 
 ---
 
+## Backend Layering
+
+Requests flow in one direction, and each layer only knows about the one beneath:
+
+```
+api/routes/*  ->  services/*  ->  repositories/*  ->  models/*
+   HTTP           business logic     data access        ORM
+```
+
+- **`api/routes/`** parse and validate the request, call one service, return a
+  schema. No queries, no business rules.
+- **`api/router.py`** is the single place route modules are registered, and the
+  single place the `/api` prefix is applied.
+- **`services/`** hold the rules and raise domain errors (`NotFoundError`,
+  `AuthenticationError`, `ValidationError`) rather than `HTTPException`, so the
+  same service works from a script or test. `main.py` maps those to status codes.
+- **`repositories/`** are the only code that touches SQLAlchemy, which keeps
+  query construction out of the handlers and makes it easy to see every way a
+  table is read.
+
+---
+
 ## Configuration
 
 All secrets come from the environment. `backend/.env` is gitignored; create it
@@ -76,6 +103,7 @@ from the table below.
 | `ADMIN_EMAIL` | no | Login identity and contact-notification recipient |
 | `DATABASE_URL` | no | Defaults to `sqlite:///./app.db` |
 | `CORS_ORIGINS` | no | Comma-separated. Only needed for front-ends on a *different* origin. Never `*` — the API sends credentials. |
+| `ENVIRONMENT` | no | `development` (default) also allows any `localhost`/`127.0.0.1` port through CORS, so a shifted Vite port still works. Set to `production` on deploy to disable that. |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | no | Contact-form notification email. If unset, notifications are skipped; messages are still stored and readable in the admin inbox. |
 
 ---
@@ -101,10 +129,14 @@ Migrations run automatically on startup. API docs: http://127.0.0.1:8000/docs
 ```bash
 cd frontend
 npm install
-npm run dev                    # http://localhost:5173
+npm run dev                    # http://localhost:5173 (or the next free port)
 ```
 
-`frontend/.env.development` points the dev server at `http://127.0.0.1:8000`.
+`frontend/.env.development` leaves `VITE_API_URL` empty on purpose, so the app
+calls its own origin and Vite proxies `/api` to the backend (see the `proxy`
+block in `vite.config.js`). That keeps the dev loop same-origin, so it works
+whatever port Vite lands on. Do not put an absolute URL there - that reintroduces
+CORS and breaks the moment another project takes port 5173.
 
 ### Docker (single container, production-shaped)
 
@@ -169,6 +201,7 @@ python -m scripts.seed_user
   a multi-process deployment needs Redis-backed limiting instead.
 - Uploaded images are stored as blobs in the database, not on disk, so they
   survive redeploys on ephemeral filesystems. This is fine at portfolio scale
-  and would not be at larger volumes.
+  and would not be at larger volumes. Uploads are capped at 5 MB and restricted
+  by extension; the file's actual contents are not inspected.
 - Admin JWTs live in `localStorage` and last 24 hours. There is no refresh or
   server-side revocation.

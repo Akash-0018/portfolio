@@ -14,8 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.config import settings
 from core.database import SessionLocal
 from core.migrations import run_migrations
-from models.user import User
-from utils.auth import get_password_hash
+from services.auth_service import AuthService
 
 
 def seed_user():
@@ -28,29 +27,11 @@ def seed_user():
     run_migrations()
     db = SessionLocal()
     try:
-        user = (
-            db.query(User)
-            .filter(
-                (User.username.ilike(settings.ADMIN_USERNAME))
-                | (User.email.ilike(settings.ADMIN_EMAIL))
-            )
-            .first()
+        created = AuthService(db).upsert_admin(
+            settings.ADMIN_USERNAME, settings.ADMIN_EMAIL, settings.ADMIN_PASSWORD
         )
-        if not user:
-            user = User(
-                username=settings.ADMIN_USERNAME,
-                email=settings.ADMIN_EMAIL,
-                hashed_password=get_password_hash(settings.ADMIN_PASSWORD),
-            )
-            db.add(user)
-            db.commit()
-            print(f"Created admin user: {settings.ADMIN_USERNAME} / {settings.ADMIN_EMAIL}")
-        else:
-            user.username = settings.ADMIN_USERNAME
-            user.email = settings.ADMIN_EMAIL
-            user.hashed_password = get_password_hash(settings.ADMIN_PASSWORD)
-            db.commit()
-            print(f"Rotated admin credential for: {settings.ADMIN_USERNAME} / {settings.ADMIN_EMAIL}")
+        verb = "Created" if created else "Rotated credential for"
+        print(f"{verb} admin user: {settings.ADMIN_USERNAME} / {settings.ADMIN_EMAIL}")
     finally:
         db.close()
 

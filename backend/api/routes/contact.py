@@ -1,14 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, BackgroundTasks, Depends, status
 
-from core.database import get_db
-from models.contact import ContactMessage
+from api.deps import enforce_contact_rate_limit, get_contact_service, get_current_admin
 from schemas.contact import ContactCreate, ContactResponse
-from utils.auth import get_current_admin
+from services.contact_service import ContactService
 from utils.email_utils import send_contact_notification
-from utils.rate_limit import enforce_contact_rate_limit
 
 router = APIRouter(prefix="/contact", tags=["contact"])
 
@@ -22,12 +19,9 @@ router = APIRouter(prefix="/contact", tags=["contact"])
 def submit_contact(
     contact_data: ContactCreate,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db),
+    contact: ContactService = Depends(get_contact_service),
 ):
-    message = ContactMessage(**contact_data.model_dump())
-    db.add(message)
-    db.commit()
-    db.refresh(message)
+    message = contact.submit(contact_data)
 
     # Best-effort notification. The message is already persisted and readable in
     # the admin inbox, so a missing or failing SMTP config never loses it.
@@ -45,24 +39,17 @@ def submit_contact(
 @router.get("", response_model=List[ContactResponse])
 @router.get("/", response_model=List[ContactResponse])
 def list_contact_messages(
-    db: Session = Depends(get_db),
+    contact: ContactService = Depends(get_contact_service),
     admin: str = Depends(get_current_admin),
 ):
-    return db.query(ContactMessage).order_by(ContactMessage.created_at.desc()).all()
+    return contact.list_all()
 
 
 @router.delete("/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_contact_message(
     message_id: int,
-    db: Session = Depends(get_db),
+    contact: ContactService = Depends(get_contact_service),
     admin: str = Depends(get_current_admin),
 ):
-    message = db.query(ContactMessage).filter(ContactMessage.id == message_id).first()
-    if not message:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Message not found"
-        )
-
-    db.delete(message)
-    db.commit()
+    contact.delete(message_id)
     return None
