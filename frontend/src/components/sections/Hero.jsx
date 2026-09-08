@@ -34,8 +34,9 @@ export default function Hero() {
       className="scroll-section"
       style={{
         justifyContent: 'center',
-        alignItems: 'center',
-        padding: '0 clamp(2rem, 6vw, 6rem)',
+        // Top padding clears the fixed nav; the section's `align-items: safe
+        // center` keeps taller-than-viewport content from riding up under it.
+        padding: 'calc(var(--nav-offset) + 1.5rem) clamp(2rem, 6vw, 6rem) 4rem',
         minHeight: '100vh',
       }}
     >
@@ -131,9 +132,9 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right Column: Architectural Pill Portrait (Inspired by reference image layout) */}
+        {/* Right Column: arch-framed portrait */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           style={{
@@ -143,45 +144,20 @@ export default function Hero() {
             alignItems: 'center',
           }}
         >
-          {/* Subtle Outer Champagne Accent Ring Line */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: '-12px',
-              borderRadius: '160px',
-              border: '1px solid rgba(217, 200, 163, 0.25)',
-              pointerEvents: 'none',
-              transform: 'rotate(-4deg)',
-            }}
-          />
-
-          {/* Architectural Pill-Shaped Container */}
-          <div
-            style={{
-              width: '100%',
-              aspectRatio: '3 / 4',
-              maxHeight: '440px',
-              borderRadius: '140px',
-              overflow: 'hidden',
-              background: 'var(--card-bg)',
-              border: '1px solid var(--border)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(217, 200, 163, 0.15)',
-              position: 'relative',
-            }}
-          >
-            <img
-              src={getImageUrl(photoUrl)}
-              alt="Akash PG Portrait"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                filter: 'brightness(0.95) contrast(1.05)',
-                transition: 'transform 0.5s ease',
-              }}
-              onError={(e) => { e.target.src = DEFAULT_PHOTO }}
-            />
-          </div>
+          <figure className="hero-portrait">
+            <div className="hero-portrait-frame">
+              <img
+                src={getImageUrl(photoUrl)}
+                alt="Portrait of Akash PG"
+                loading="eager"
+                onError={(e) => { e.target.src = DEFAULT_PHOTO }}
+              />
+            </div>
+            <figcaption className="hero-portrait-status">
+              <span className="status-dot" aria-hidden="true" />
+              Open to consulting
+            </figcaption>
+          </figure>
         </motion.div>
       </motion.div>
     </section>

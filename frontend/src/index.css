@@ -37,6 +37,10 @@
   --font-akkurat: 'Akkurat', 'Inter', sans-serif;
   --font-azeret: 'Azeret Mono', monospace;
   --radius: 18px;
+
+  /* Height of the fixed nav plus its offset from the top. Anything that must
+     clear the nav references this rather than hardcoding a magic number. */
+  --nav-offset: 6.5rem;
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────────────────── */
@@ -50,6 +54,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Anchor targets stop below the fixed nav rather than behind it. */
+  scroll-padding-top: var(--nav-offset);
   overflow-x: hidden;
   background-color: var(--bg-void);
 }
@@ -138,10 +144,16 @@ body {
 .scroll-section {
   min-height: 100vh;
   display: flex;
-  align-items: center;
   justify-content: center;
   position: relative;
   padding: 6rem clamp(1.5rem, 5vw, 6rem);
+
+  /* When a section's content is taller than the viewport, plain `center`
+     overflows in BOTH directions and slides the top of the block up behind the
+     fixed nav. `safe center` falls back to flex-start in that case. The
+     unprefixed declaration above it is the fallback for older engines. */
+  align-items: center;
+  align-items: safe center;
 }
 
 /* ─── Minimal Cards ──────────────────────────────────────────────────────── */
@@ -341,6 +353,12 @@ textarea.input-minimal {
 .nav-link:hover::after,
 .nav-link.active::after {
   width: 100%;
+}
+
+/* Nav labels must never wrap - "Tech-Stack" breaks on its hyphen otherwise and
+   makes the whole pill two lines tall. */
+header[aria-label="Section navigation"] nav button {
+  white-space: nowrap;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
@@ -676,6 +694,122 @@ textarea.input-minimal {
   color: var(--text-secondary);
 }
 
+/* --- Hero portrait -------------------------------------------------------
+   An arch frame (rounded crown, squared base) rather than the previous pill:
+   it reads as an editorial portrait instead of a cropped sticker. The image
+   fades into the page background at its base so it sits in the layout rather
+   than on top of it, and a single concentric hairline replaces the rotated
+   ring that looked accidental. */
+.hero-portrait {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
+  aspect-ratio: 4 / 5;
+  isolation: isolate;
+}
+
+/* Ambient champagne bloom behind the frame, for depth against the dark ground */
+.hero-portrait::before {
+  content: '';
+  position: absolute;
+  inset: -14% -10% -4%;
+  border-radius: 50%;
+  background: radial-gradient(
+    58% 52% at 50% 38%,
+    rgba(217, 200, 163, 0.18),
+    rgba(217, 200, 163, 0) 70%
+  );
+  filter: blur(30px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Concentric hairline echoing the frame's silhouette */
+.hero-portrait::after {
+  content: '';
+  position: absolute;
+  inset: -14px -14px 8px;
+  border: 1px solid rgba(217, 200, 163, 0.22);
+  border-radius: 999px 999px 26px 26px;
+  pointer-events: none;
+}
+
+.hero-portrait-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 999px 999px 18px 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 28px 64px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(217, 200, 163, 0.18);
+}
+
+.hero-portrait-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-portrait:hover .hero-portrait-frame img {
+  transform: scale(1.04);
+}
+
+/* Base fade, so the portrait dissolves into the page instead of ending on a
+   hard edge. Uses the theme token, so it follows light mode. */
+.hero-portrait-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg-void) 0%, rgba(0, 0, 0, 0) 26%);
+  pointer-events: none;
+}
+
+/* Status chip straddling the base of the frame */
+.hero-portrait-status {
+  position: absolute;
+  left: 50%;
+  bottom: -0.85rem;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-surface) 82%, transparent);
+  backdrop-filter: blur(12px);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.hero-portrait-status .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 8px var(--lime);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-portrait-frame img,
+  .hero-portrait:hover .hero-portrait-frame img {
+    transition: none;
+    transform: none;
+  }
+}
+
 @media (max-width: 900px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -686,8 +820,11 @@ textarea.input-minimal {
   
   .hero-grid > div:nth-child(2) {
     order: -1; /* Show portrait first on mobile/tablet */
-    max-width: 240px;
     margin: 0 auto;
+  }
+
+  .hero-portrait {
+    max-width: 230px;
   }
 }
 
