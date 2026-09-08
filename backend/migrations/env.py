@@ -17,7 +17,10 @@ config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url_corrected)
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    # disable_existing_loggers defaults to True, which would tear down every
+    # logger already configured in the process. run_migrations() is called from
+    # the FastAPI lifespan, so that silences uvicorn for the rest of the run.
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 target_metadata = Base.metadata
 
