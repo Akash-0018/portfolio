@@ -67,7 +67,7 @@ export default function CosmosMap() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                color: isActive ? '#FFFFFF' : '#8E8E8E',
+                color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
                 fontFamily: 'Akkurat, Inter, sans-serif',
                 fontSize: '14px',
                 fontWeight: 500,

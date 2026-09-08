@@ -222,7 +222,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.05;
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .headline-section {
@@ -230,7 +230,7 @@ body {
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.1;
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .section-badge {
@@ -324,7 +324,7 @@ textarea.input-minimal {
 
 .nav-link:hover,
 .nav-link.active {
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .nav-link::after {
