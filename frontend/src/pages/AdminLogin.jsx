@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
-import { loginAdmin } from '../services/api'
+import { loginAdmin, describeApiError } from '../services/api'
 
 export default function AdminLogin({ onLoginSuccess }) {
   const [username, setUsername] = useState('')
@@ -23,7 +23,7 @@ export default function AdminLogin({ onLoginSuccess }) {
         onLoginSuccess()
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Authentication failed.')
+      setError(describeApiError(err, 'Authentication failed.'))
     } finally {
       setLoading(false)
     }

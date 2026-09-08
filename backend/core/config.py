@@ -4,6 +4,9 @@ from typing import List
 
 
 class Settings(BaseSettings):
+    # "production" disables the local-origin CORS allowance below.
+    ENVIRONMENT: str = "development"
+
     DATABASE_URL: str = "sqlite:///./app.db"
     CORS_ORIGINS: str = (
         "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,"
@@ -49,6 +52,23 @@ class Settings(BaseSettings):
         elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
             return url.replace("postgresql://", "postgresql+psycopg2://", 1)
         return url
+
+    @property
+    def is_production(self) -> bool:
+        return self.ENVIRONMENT.strip().lower() == "production"
+
+    @property
+    def cors_origin_regex(self) -> str | None:
+        """Allow any localhost port during development.
+
+        Vite falls back to 5174, 5175... whenever the configured port is taken,
+        and pinning a single port in CORS_ORIGINS turns that into an opaque
+        browser-side failure. Loopback origins are only reachable from the
+        developer's own machine. Disabled in production.
+        """
+        if self.is_production:
+            return None
+        return r"http://(localhost|127\.0\.0\.1)(:\d+)?"
 
     @property
     def cors_origins_list(self) -> List[str]:

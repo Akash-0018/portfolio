@@ -7,6 +7,9 @@ services:
     dockerfilePath: Dockerfile
     dockerContext: .
     envVars:
+      # Disables the development-only loopback CORS allowance.
+      - key: ENVIRONMENT
+        value: production
       - key: DATABASE_URL
         value: sqlite:////app/data/app.db
       # The SPA is served from this same origin, so CORS only needs to list

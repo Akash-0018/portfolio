@@ -18,6 +18,21 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error)
 })
 
+/**
+ * Turn an axios error into something a user can act on.
+ *
+ * `err.response` is undefined when the request never completed - the backend is
+ * down, the request timed out, or the browser blocked it (CORS). Reporting those
+ * with the caller's fallback string makes a connectivity problem look like a
+ * rejected credential, which is exactly how a dev-server port change once
+ * presented itself as "Authentication failed."
+ */
+export const describeApiError = (err, fallback = 'Request failed.') => {
+  if (err?.response) return err.response.data?.detail || fallback
+  if (err?.code === 'ECONNABORTED') return 'The server took too long to respond.'
+  return 'Could not reach the API. Check that the backend is running and that this origin is allowed.'
+}
+
 export const fetchProjects = () => api.get('/projects/')
 export const fetchFeaturedProjects = () => api.get('/projects/featured')
 export const submitContact = (data) => api.post('/contact/', data)

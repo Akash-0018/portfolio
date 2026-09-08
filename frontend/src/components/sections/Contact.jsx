@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { submitContact } from '../../services/api'
+import { submitContact, describeApiError } from '../../services/api'
 
 const LINKS = [
   { label: 'GitHub', href: 'https://github.com/akashpg', icon: '◈' },
@@ -13,6 +13,7 @@ const LINKS = [
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [status, setStatus] = useState('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -23,7 +24,9 @@ export default function Contact() {
       await submitContact(form)
       setStatus('success')
       setForm({ name: '', email: '', subject: '', message: '' })
-    } catch {
+    } catch (err) {
+      // Surfaces the 429 from the rate limiter, not just a generic failure.
+      setErrorMessage(describeApiError(err, 'Transmission failed. Please retry.'))
       setStatus('error')
     }
   }
@@ -142,7 +145,7 @@ export default function Contact() {
 
               {status === 'error' && (
                 <p style={{ color: 'var(--error)', fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8rem' }}>
-                  Transmission failed. Please retry.
+                  {errorMessage || 'Transmission failed. Please retry.'}
                 </p>
               )}
             </form>
