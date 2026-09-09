@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, status
 
-from api.deps import enforce_contact_rate_limit, get_contact_service, get_current_admin
+from routes.deps import enforce_contact_rate_limit, get_contact_service, get_current_admin
 from schemas.contact import ContactCreate, ContactResponse
 from services.contact_service import ContactService
 from utils.email_utils import send_contact_notification

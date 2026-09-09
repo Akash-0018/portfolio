@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from api.router import api_router
+from routes.router import api_router
 from core.config import settings
 from core.database import SessionLocal
 from core.migrations import run_migrations

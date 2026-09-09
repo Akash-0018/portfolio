@@ -3,7 +3,7 @@ import os
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from fastapi.responses import FileResponse
 
-from api.deps import get_current_admin, get_upload_service
+from routes.deps import get_current_admin, get_upload_service
 from services.exceptions import NotFoundError
 from services.upload_service import UploadService
 

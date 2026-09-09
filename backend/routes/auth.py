@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from api.deps import get_auth_service, get_current_admin
+from routes.deps import get_auth_service, get_current_admin
 from services.auth_service import AuthService
 from services.exceptions import AuthenticationError
 

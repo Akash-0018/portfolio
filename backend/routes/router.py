@@ -6,7 +6,7 @@ is applied once, at inclusion time.
 """
 from fastapi import APIRouter
 
-from api.routes import auth, contact, health, profile, projects, seminars, uploads
+from routes import auth, contact, health, profile, projects, seminars, uploads
 
 api_router = APIRouter(prefix="/api")
 

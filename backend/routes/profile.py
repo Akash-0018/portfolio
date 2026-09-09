@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from api.deps import get_current_admin, get_profile_service
+from routes.deps import get_current_admin, get_profile_service
 from services.profile_service import ProfileService
 
 router = APIRouter(prefix="/profile", tags=["profile"])

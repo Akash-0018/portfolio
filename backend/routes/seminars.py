@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from api.deps import get_current_admin, get_seminar_service
+from routes.deps import get_current_admin, get_seminar_service
 from schemas.seminar import SeminarCreate, SeminarResponse, SeminarUpdate
 from services.seminar_service import SeminarService
 

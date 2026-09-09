@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from api.deps import get_current_admin, get_project_service
+from routes.deps import get_current_admin, get_project_service
 from schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from services.project_service import ProjectService
 

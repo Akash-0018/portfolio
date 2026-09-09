@@ -2,7 +2,7 @@
 
 Pure functions with no FastAPI or database dependency, so they can be used from
 services, scripts and tests alike. The request-time dependency that turns a
-bearer token into a user lives in api/deps.py.
+bearer token into a user lives in routes/deps.py.
 """
 from datetime import datetime, timedelta, timezone
 
