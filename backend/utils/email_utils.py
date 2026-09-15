@@ -1,3 +1,4 @@
+import html
 import smtplib
 import logging
 from email.mime.text import MIMEText
@@ -24,17 +25,26 @@ def send_contact_notification(name: str, sender_email: str, subject: str, messag
         msg["To"] = settings.ADMIN_EMAIL
         msg["Subject"] = f"Portfolio Contact: {subject}"
 
+        # Every value below arrives from the public, unauthenticated contact form.
+        # Escaped so a sender's "<a href=...>" renders as the literal text they
+        # typed rather than becoming a live link in an email that carries our own
+        # From address - the markup would otherwise inherit the template's trust.
+        safe_name = html.escape(name or "")
+        safe_sender_email = html.escape(sender_email or "")
+        safe_subject = html.escape(subject or "")
+        safe_message = html.escape(message or "")
+
         # Design a clean HTML body for the email
         html_body = f"""
         <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
                     <h2 style="color: #4A90E2; border-bottom: 2px solid #4A90E2; padding-bottom: 10px;">New Contact Message</h2>
-                    <p><strong>Name:</strong> {name}</p>
-                    <p><strong>Email:</strong> {sender_email}</p>
-                    <p><strong>Subject:</strong> {subject}</p>
+                    <p><strong>Name:</strong> {safe_name}</p>
+                    <p><strong>Email:</strong> {safe_sender_email}</p>
+                    <p><strong>Subject:</strong> {safe_subject}</p>
                     <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #4A90E2; margin-top: 15px; white-space: pre-wrap;">
-                        {message}
+                        {safe_message}
                     </div>
                 </div>
             </body>
