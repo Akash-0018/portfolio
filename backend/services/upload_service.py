@@ -7,7 +7,11 @@ from models.upload import Upload
 from repositories.upload_repository import UploadRepository
 from services.exceptions import NotFoundError, ValidationError
 
-ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
+# Raster formats only. ".svg" is deliberately absent: an SVG is a document the
+# browser renders, not compressed pixels, and it may legally contain <script>.
+# Uploads are served from /api/uploads/ on the same origin as the SPA, so a
+# scriptable upload would run with access to the admin token in localStorage.
+ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB
 
 
