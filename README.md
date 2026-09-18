@@ -27,7 +27,9 @@ built React bundle and the API from the same origin.
 - **Server:** Uvicorn
 
 ### Database & deployment
-- **Database:** SQLite (`app.db`; a persistent disk at `/app/data` on Render)
+- **Database:** SQLite (`app.db`; at `/app/data` on Render). The free tier cannot
+  mount a disk, so that file is ephemeral there — it is recreated and re-seeded on
+  every restart, deploy and spin-down, and admin-panel content does not survive.
 - **Container:** Multi-stage Dockerfile (Node build → Python runtime)
 - **Hosting:** Render Blueprint (`render.yaml`)
 

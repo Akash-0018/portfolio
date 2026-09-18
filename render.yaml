@@ -1,6 +1,8 @@
 services:
   - type: web
-    name: portfolio-app
+    # Renaming the service is what gets a fresh https://<name>.onrender.com URL;
+    # Render treats a new name as a new service rather than reusing the old one.
+    name: akash-portfolio
     runtime: docker
     plan: free
     region: singapore
@@ -10,12 +12,20 @@ services:
       # Disables the development-only loopback CORS allowance.
       - key: ENVIRONMENT
         value: production
+      # No disk: free-tier services cannot mount one, so the SQLite file lives on
+      # the container's ephemeral filesystem and is lost on every restart, deploy
+      # and spin-down. The admin user and the starter seminar are re-seeded at
+      # boot, but anything added through the admin panel will not survive. Move to
+      # a managed Postgres (and add psycopg2-binary to backend/requirements.txt)
+      # when the content needs to persist.
       - key: DATABASE_URL
         value: sqlite:////app/data/app.db
-      # The SPA is served from this same origin, so CORS only needs to list
-      # genuinely external front-ends. Never "*" alongside allow_credentials.
+      # The SPA and the API are served from the same origin by this container, so
+      # the browser never makes a cross-origin request and no origin needs to be
+      # allow-listed. Add genuinely external front-ends here if any appear; never
+      # "*", which is invalid alongside allow_credentials.
       - key: CORS_ORIGINS
-        value: "https://akash-aiportfolio.netlify.app"
+        value: ""
       - key: SECRET_KEY
         generateValue: true
       - key: ADMIN_USERNAME
@@ -28,7 +38,3 @@ services:
         sync: false
       - key: SMTP_PASSWORD
         sync: false
-    disk:
-      name: portfolio-db-data
-      mountPath: /app/data
-      sizeGB: 1
