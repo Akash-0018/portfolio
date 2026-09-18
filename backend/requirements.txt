@@ -9,3 +9,8 @@ python-multipart==0.0.9
 httpx>=0.28.1
 pyjwt>=2.8.0
 passlib[bcrypt]>=1.7.4
+# passlib 1.7.4 probes its bcrypt backend by hashing a deliberately over-length
+# password. bcrypt < 5 truncated it silently; bcrypt 5.0 raises ValueError
+# instead, so the backend fails to initialise and the first hash call kills
+# startup. Pin below 5 until passlib is replaced with the bcrypt module directly.
+bcrypt>=4.0.1,<5
