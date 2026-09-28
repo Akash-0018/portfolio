@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     ADMIN_EMAIL: str = "akashcse018@gmail.com"
 
+    # Portfolio chatbot. Optional: with no key the chat endpoint answers 503 and
+    # the widget shows itself as offline, rather than the app refusing to boot.
+    GROQ_API_KEY: str = ""
+    # Groq's cheapest self-serve chat model ($0.075 in / $0.30 out per 1M tokens).
+    CHAT_MODEL: str = "openai/gpt-oss-20b"
+
     @model_validator(mode="after")
     def require_secret_key(self) -> "Settings":
         if not self.SECRET_KEY.strip():

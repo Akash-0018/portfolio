@@ -55,6 +55,10 @@ class SlidingWindowLimiter:
 # 5 contact submissions per IP per hour.
 contact_limiter = SlidingWindowLimiter(max_requests=5, window_seconds=3600)
 
+# 30 chatbot turns per IP per 10 minutes: plenty for a real conversation, and a
+# cap on what one visitor can spend on the model API.
+chat_limiter = SlidingWindowLimiter(max_requests=30, window_seconds=600)
+
 
 def enforce_contact_rate_limit(request: Request) -> None:
     contact_limiter.check(request)

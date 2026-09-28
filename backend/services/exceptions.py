@@ -24,3 +24,7 @@ class AuthenticationError(ServiceError):
 
 class ValidationError(ServiceError):
     """The request was well-formed but its contents were unacceptable. -> 400"""
+
+
+class UnavailableError(ServiceError):
+    """A dependency (e.g. the chatbot's model API) is unconfigured or down. -> 503"""

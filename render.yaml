@@ -38,3 +38,7 @@ services:
         sync: false
       - key: SMTP_PASSWORD
         sync: false
+      # Powers the portfolio chatbot. Without it the site still runs and the
+      # chat widget reports itself offline.
+      - key: GROQ_API_KEY
+        sync: false

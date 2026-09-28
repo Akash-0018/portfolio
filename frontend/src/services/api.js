@@ -37,6 +37,9 @@ export const fetchProjects = () => api.get('/projects/')
 export const fetchFeaturedProjects = () => api.get('/projects/featured')
 export const submitContact = (data) => api.post('/contact/', data)
 
+// The model can take longer to answer than the default 10s timeout allows.
+export const sendChatMessage = (messages) => api.post('/chat/', { messages }, { timeout: 60000 })
+
 // Profile Settings APIs
 export const fetchProfile = () => api.get('/profile/')
 export const updateProfile = (data) => api.put('/profile/', data)

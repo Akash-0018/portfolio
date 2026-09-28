@@ -1,7 +1,8 @@
 .back-to-top-btn {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  /* Stacked above the chatbot launcher (56px at bottom: 2rem). */
+  bottom: calc(2rem + 68px);
+  right: calc(2rem + 5px);
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -46,8 +47,8 @@ html.light-mode .back-to-top-btn:hover {
 
 @media (max-width: 768px) {
   .back-to-top-btn {
-    bottom: 1.25rem;
-    right: 1.25rem;
+    bottom: calc(1.25rem + 60px);
+    right: calc(1.25rem + 5px);
     width: 40px;
     height: 40px;
   }

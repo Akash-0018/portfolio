@@ -16,6 +16,7 @@ from services.exceptions import (
     AuthenticationError,
     NotFoundError,
     ServiceError,
+    UnavailableError,
     ValidationError,
 )
 from services.seminar_service import SeminarService
@@ -91,6 +92,7 @@ _STATUS_BY_ERROR = {
     NotFoundError: 404,
     AuthenticationError: 401,
     ValidationError: 400,
+    UnavailableError: 503,
 }
 
 
@@ -123,7 +125,10 @@ if os.path.exists(FRONTEND_DIST_DIR):
         name="assets",
     )
 
-    @app.get("/{full_path:path}")
+    # HEAD as well as GET: FastAPI's @app.get() registers GET alone (unlike
+    # Starlette's plain routes, which imply HEAD), and Render's health probe and
+    # most uptime pingers issue HEAD / - which would otherwise be a 405.
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"])
     async def serve_spa(full_path: str):
         clean_path = urllib.parse.unquote(full_path).lstrip("/")
         # Anything under api/ is the routers' business; never fall back for it.

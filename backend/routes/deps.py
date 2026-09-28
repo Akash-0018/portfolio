@@ -10,13 +10,14 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from services.auth_service import AuthService
+from services.chat_service import ChatService
 from services.contact_service import ContactService
 from services.exceptions import AuthenticationError
 from services.profile_service import ProfileService
 from services.project_service import ProjectService
 from services.seminar_service import SeminarService
 from services.upload_service import UploadService
-from utils.rate_limit import contact_limiter
+from utils.rate_limit import chat_limiter, contact_limiter
 
 security = HTTPBearer()
 
@@ -45,6 +46,10 @@ def get_upload_service(db: Session = Depends(get_db)) -> UploadService:
     return UploadService(db)
 
 
+def get_chat_service(db: Session = Depends(get_db)) -> ChatService:
+    return ChatService(db)
+
+
 def get_current_admin(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     auth: AuthService = Depends(get_auth_service),
@@ -62,3 +67,7 @@ def get_current_admin(
 
 def enforce_contact_rate_limit(request: Request) -> None:
     contact_limiter.check(request)
+
+
+def enforce_chat_rate_limit(request: Request) -> None:
+    chat_limiter.check(request)

@@ -5,6 +5,7 @@ import usePortfolioStore from '../store/portfolioStore'
 import LoadingScreen from '../components/ui/LoadingScreen'
 import CosmosMap from '../components/ui/CosmosMap'
 import BackToTop from '../components/ui/BackToTop'
+import ChatBot from '../components/ui/ChatBot'
 
 import Hero from '../components/sections/Hero'
 import About from '../components/sections/About'
@@ -69,6 +70,7 @@ export default function HomePage() {
       )}
 
       <BackToTop />
+      {!isLoading && <ChatBot />}
     </>
   )
 }
