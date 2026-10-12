@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fetchProjects, getImageUrl } from '../services/api'
 import FALLBACK_PROJECTS from '../constants/fallbackProjects'
+import { categoryLabel } from '../constants/projectCategories'
 import Loader from '../components/ui/Loader'
 import BackToTop from '../components/ui/BackToTop'
 import ThemeSwitch from '../components/ui/ThemeSwitch'
@@ -14,6 +15,7 @@ export default function AllProjectsPage() {
   const [selected, setSelected] = useState(null)
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
+  const [activeSubcategory, setActiveSubcategory] = useState('All')
 
   useEffect(() => {
     fetchProjects()
@@ -31,9 +33,20 @@ export default function AllProjectsPage() {
   }, [])
 
   const categories = ['All', ...new Set(projects.map((p) => p.category).filter(Boolean))]
+  // Second-level filter, shown only for a category whose projects have subcategories.
+  const subcategories = activeCategory === 'All'
+    ? []
+    : [...new Set(projects.filter((p) => p.category === activeCategory).map((p) => p.subcategory).filter(Boolean))]
+
+  const selectCategory = (cat) => {
+    setActiveCategory(cat)
+    setActiveSubcategory('All')
+  }
 
   const filteredProjects = projects.filter((p) => {
-    const matchesCategory = activeCategory === 'All' || p.category === activeCategory
+    const matchesCategory =
+      (activeCategory === 'All' || p.category === activeCategory) &&
+      (activeSubcategory === 'All' || p.subcategory === activeSubcategory)
     const matchesSearch =
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.description.toLowerCase().includes(search.toLowerCase()) ||
@@ -83,7 +96,7 @@ export default function AllProjectsPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => selectCategory(cat)}
                 className="btn btn-secondary"
                 style={{
                   padding: '0.4rem 1rem',
@@ -105,6 +118,26 @@ export default function AllProjectsPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        {subcategories.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '-1.5rem', marginBottom: '2.5rem' }}>
+            {['All', ...subcategories].map((sub) => (
+              <button
+                key={sub}
+                onClick={() => setActiveSubcategory(sub)}
+                className="btn btn-secondary project-metadata"
+                style={{
+                  padding: '0.3rem 0.85rem',
+                  fontSize: '12px',
+                  borderColor: activeSubcategory === sub ? 'var(--champagne)' : 'var(--border)',
+                  color: activeSubcategory === sub ? 'var(--champagne)' : 'var(--text-muted)',
+                }}
+              >
+                {sub}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Grid */}
         {loading ? (
@@ -133,7 +166,7 @@ export default function AllProjectsPage() {
                   )}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
                     <span className="identity-champagne project-metadata">
-                      ◈ {project.category || 'SYSTEM'}
+                      ◈ {categoryLabel(project, 'SYSTEM')}
                     </span>
                     {project.featured && (
                       <span

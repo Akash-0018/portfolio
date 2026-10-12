@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fetchFeaturedProjects, getImageUrl } from '../../services/api'
 import { FALLBACK_FEATURED_PROJECTS } from '../../constants/fallbackProjects'
+import { categoryLabel } from '../../constants/projectCategories'
 import Loader from '../ui/Loader'
 import ProjectModal from '../ui/ProjectModal'
 
@@ -25,7 +26,7 @@ function ProjectCard({ project, index, onClick }) {
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <span className="identity-champagne project-metadata">
-            ◈ {project.category || 'FEATURED SYSTEM'}
+            ◈ {categoryLabel(project, 'FEATURED SYSTEM')}
           </span>
         </div>
 

@@ -14,7 +14,8 @@ class Project(Base):
     github_url = Column(String(500), nullable=True)
     live_url = Column(String(500), nullable=True)
     image_url = Column(String(500), nullable=True)
-    category = Column(String(100), nullable=True)  # e.g. "RAG", "Agentic AI", "Backend"
+    category = Column(String(100), nullable=True)  # e.g. "Professional", "Client Project", "College Project"
+    subcategory = Column(String(100), nullable=True)  # College only: "Full-Stack", "ML", "AI", "MCP"
     featured = Column(Boolean, default=False)
     order_index = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

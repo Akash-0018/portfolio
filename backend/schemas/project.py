@@ -12,6 +12,7 @@ class ProjectBase(BaseModel):
     live_url: Optional[str] = None
     image_url: Optional[str] = None
     category: Optional[str] = None
+    subcategory: Optional[str] = None
     featured: bool = False
     order_index: int = 0
 

@@ -34,6 +34,10 @@ class BaseRepository(Generic[ModelType]):
         self.db.refresh(entity)
         return entity
 
+    def add_all(self, entities: Sequence[ModelType]) -> None:
+        self.db.add_all(entities)
+        self.db.commit()
+
     def apply(self, entity: ModelType, changes: dict[str, Any]) -> ModelType:
         for field, value in changes.items():
             setattr(entity, field, value)

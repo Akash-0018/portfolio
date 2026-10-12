@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ThemeSwitch from '../components/ui/ThemeSwitch'
 import { fetchProjects, createProject, updateProject, deleteProject, fetchProfile, updateProfile, updateProfilePhoto, uploadFile, fetchSeminars, createSeminar, updateSeminar, deleteSeminar, fetchContactMessages, deleteContactMessage } from '../services/api'
 import usePortfolioStore from '../store/portfolioStore'
+import { categoryLabel } from '../constants/projectCategories'
 
 const emptyForm = {
   title: '',
@@ -12,7 +13,8 @@ const emptyForm = {
   github_url: '',
   live_url: '',
   image_url: '',
-  category: 'Agentic AI',
+  category: '',
+  subcategory: '',
   featured: false,
   order_index: 0,
 }
@@ -184,6 +186,7 @@ export default function AdminDashboard({ onLogout }) {
       live_url: project.live_url || '',
       image_url: project.image_url || '',
       category: project.category || '',
+      subcategory: project.subcategory || '',
       featured: project.featured || false,
       order_index: project.order_index || 0,
     })
@@ -528,7 +531,7 @@ export default function AdminDashboard({ onLogout }) {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
                   <span className="identity-champagne" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem' }}>
-                    ◈ {project.category || 'SYSTEM'}
+                    ◈ {categoryLabel(project, 'SYSTEM')}
                   </span>
                   {project.featured && (
                     <span style={{ fontSize: '0.7rem', color: 'var(--lime)', fontFamily: 'JetBrains Mono, monospace' }}>★ FEATURED</span>
@@ -628,6 +631,12 @@ export default function AdminDashboard({ onLogout }) {
                     placeholder="CATEGORY"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  />
+                  <input
+                    className="input-minimal"
+                    placeholder="SUBCATEGORY (college: Full-Stack / ML / AI / MCP)"
+                    value={formData.subcategory}
+                    onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                   />
                 </div>
 

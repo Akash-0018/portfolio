@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getImageUrl } from '../../services/api'
+import { categoryLabel } from '../../constants/projectCategories'
 
 /**
  * Project detail overlay, shared by the featured grid and the full archive.
@@ -78,7 +79,7 @@ export default function ProjectModal({ project, onClose }) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
             <span className="identity-champagne project-metadata">
-              &#9672; {project.category || 'SYSTEM ARCHITECTURE'}
+              &#9672; {categoryLabel(project, 'SYSTEM ARCHITECTURE')}
             </span>
             {project.featured && (
               <span

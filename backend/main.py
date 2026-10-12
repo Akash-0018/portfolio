@@ -11,6 +11,7 @@ from routes.router import api_router
 from core.config import settings
 from core.database import SessionLocal
 from core.migrations import run_migrations
+from scripts.seed import seed_projects
 from services.auth_service import AuthService
 from services.exceptions import (
     AuthenticationError,
@@ -26,7 +27,7 @@ from models import contact, profile, project, seminar, upload, user  # noqa: F40
 
 
 def bootstrap_data() -> None:
-    """Seed the first admin and a starter seminar into an empty database."""
+    """Seed the first admin, a starter seminar and the project catalogue into an empty database."""
     db = SessionLocal()
     try:
         auth = AuthService(db)
@@ -54,6 +55,10 @@ def bootstrap_data() -> None:
             tag="Seminar 01",
             order_index=1,
         )
+
+        added = seed_projects(db)
+        if added:
+            print(f"[OK] Seeded {added} projects into the empty projects table.")
     finally:
         db.close()
 

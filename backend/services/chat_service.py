@@ -58,13 +58,14 @@ def _format_projects(projects: Sequence) -> str:
     if not projects:
         return "No additional projects are listed in the site's database right now."
     lines = [
-        "Projects currently listed on the site (live from the database; where one "
-        "overlaps with the knowledge base, prefer these details):"
+        "Projects currently listed on the site (live from the database; this is "
+        "the complete list):"
     ]
     for p in projects:
         entry = f"- {p.title}"
-        if p.category:
-            entry += f" [{p.category}]"
+        label = " · ".join(filter(None, [p.category, p.subcategory, "featured" if p.featured else None]))
+        if label:
+            entry += f" [{label}]"
         entry += f": {p.description}"
         if p.long_description:
             entry += f" {p.long_description}"

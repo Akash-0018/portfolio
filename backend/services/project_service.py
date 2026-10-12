@@ -35,3 +35,10 @@ class ProjectService:
 
     def delete(self, project_id: int) -> None:
         self.projects.delete(self.get(project_id))
+
+    def seed_defaults(self, rows: Sequence[dict]) -> int:
+        """Insert starter projects when the table is empty; return rows added."""
+        if self.projects.count() > 0:
+            return 0
+        self.projects.add_all([Project(**ProjectCreate(**row).model_dump()) for row in rows])
+        return len(rows)

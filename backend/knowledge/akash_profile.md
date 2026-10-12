@@ -78,72 +78,20 @@ performance tuning, CI/CD pipelines.
 
 ## Projects
 
-**Featured projects (exactly three):** Enterprise RAG Document Intelligence,
-Autonomous Multi-Agent Orchestrator, and Low-Latency Streaming AI Platform. None
-of the other projects are featured, so never describe them as featured.
+The full, current project list comes from the site's database and is appended
+below this file as the live project list. Treat that list as the only source
+for project names, descriptions, tech stacks and links, and for which projects
+are featured. Never mention a project that is not in it.
 
-### 1. Enterprise RAG Document Intelligence
-- **Category:** RAG Infrastructure (featured)
-- **What it is:** An enterprise-grade Retrieval-Augmented Generation system that
-  lets businesses query their internal documents in natural language.
-- **How it works:** Multi-format ingestion (PDF, DOCX, XLSX), semantic chunking,
-  pgvector / ChromaDB indexing, and hybrid BM25 + vector search with reranking.
-  Deployed on AWS with auto-scaling.
-- **Tech:** Python, FastAPI, LangChain, pgvector, ChromaDB, OpenAI API, AWS, Docker
+Projects are grouped into these categories:
 
-### 2. Autonomous Multi-Agent Orchestrator
-- **Category:** Agentic AI (featured)
-- **What it is:** A multi-agent orchestration framework where autonomous AI agents
-  collaborate to complete complex business tasks end to end.
-- **How it works:** A stateful agent runtime built on LangGraph, with specialised
-  agents for research, code generation, validation and reporting. Uses the Model
-  Context Protocol (MCP) for tool use.
-- **Tech:** Python, LangGraph, MCP, FastAPI, OpenAI API, PostgreSQL, Redis
-
-### 3. Low-Latency Streaming AI Platform
-- **Category:** LLM Systems (featured)
-- **What it is:** A production-ready conversational AI platform and inference
-  proxy with context-aware responses, multi-model support and real-time
-  streaming.
-- **How it works:** Model routing across OpenAI GPT-4, Google Gemini and local
-  Ollama models; conversation history and user sessions; a React chat UI that
-  streams responses over WebSockets. Built for high concurrency.
-- **Tech:** Python, FastAPI, Redis, OpenAI API, Google Gemini, Ollama, React.js, WebSockets
-
-### 4. Automated Code Review Engine
-- **Category:** AI Operations
-- **What it is:** An LLM-powered code review tool that analyses pull requests,
-  detects bugs, suggests improvements and enforces best practices.
-- **How it works:** Integrates with GitHub webhooks. Runs multi-stage security,
-  performance and architecture audits, using chain-of-thought prompting to give
-  structured, actionable feedback with severity ratings.
-- **Tech:** Python, FastAPI, OpenAI API, GitHub API, Docker, PostgreSQL
-
-### 5. Vector DB Benchmarking Toolkit / Vector Database Explorer
-- **Category:** Data & Indexing
-- **What it is:** A toolkit for comparing and exploring vector databases.
-- **How it works:** Benchmarks Chroma, Qdrant, Pinecone and pgvector under peak
-  load. Also lets you upload documents, view embedding clusters in 2D/3D using
-  UMAP, and run semantic queries with similarity scores.
-- **Tech:** Python, pgvector, ChromaDB, FastAPI, React.js, UMAP, Sentence Transformers, Locust
-
-### 6. Semantic Cache & Gateway Proxy
-- **Category:** LLM Systems
-- **What it is:** A low-latency LLM response cache that matches on embedding
-  similarity to cut API costs.
-- **How it works:** Incoming prompts are embedded and compared against earlier
-  ones. Close-enough matches are served from the cache, so the model is never
-  called for them.
-- **Tech:** FastAPI, Redis, SentenceTransformers
-
-### 7. Intelligent Automation Pipeline
-- **Category:** AI Automation
-- **What it is:** An end-to-end automation system that extracts, transforms and
-  routes data from unstructured sources using LLM-powered classification.
-- **How it works:** Processes emails, PDFs and web content. LLMs extract
-  structured data, classify intent, and trigger downstream workflows through
-  webhooks and APIs.
-- **Tech:** Python, LangChain, FastAPI, Celery, Redis, Django, PostgreSQL
+- **Professional:** products built at work, such as the Fusefy AI governance
+  platform (v1 for Jira Cloud and the 2.0 SaaS rebuild), Campus AI and Realtty AI.
+- **Client Project:** work delivered for outside businesses, such as The Mannan
+  Crackers online store.
+- **Freelance Project:** freelance builds such as TurfZone and StudyBuddy AI.
+- **College Project:** split into Full-Stack, ML, AI and MCP subcategories.
+- **Others / General:** anything else, such as AuraBot and PixelTest.
 
 ### This portfolio site itself
 - A single-container app: a React 19 + Vite front end (Three.js / React Three
